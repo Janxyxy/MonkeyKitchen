@@ -76,6 +76,7 @@ crashlytics-build.properties
 /Assets/vHierarchy/
 /Assets/vInspector/
 
+# Metadata files for my assets
 /Assets/vFavorites.meta
 /Assets/vHierarchy.meta
 /Assets/vInspector.meta
