@@ -1,21 +1,57 @@
+using System;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float playerRadus = 1f;
     [SerializeField] private float playerHeight = 2f;
 
+    [Header("Interaction Settings")]
+    [SerializeField] private float interactDistance = 2;
+    [SerializeField] private LayerMask interactLayerMask;
 
     private GameInput gameInput;
+
     private bool isMoving;
+    private Vector3 lastIteractDir;
+    private ClearCounter selectedClearCounter;
+
+    public event Action<OnSelectedCounterChangedEventArgs> OnSelectedCounterChanged;
+    public class OnSelectedCounterChangedEventArgs
+    {
+        public ClearCounter selectedCounter;
+    }
+
+    public static Player Instance { get; private set; }
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            Debug.LogWarning("Multiple Player instances detected. Destroying duplicate.");
+            return;
+        }
+        Instance = this;
+    }
 
     private void Start()
     {
         gameInput = FindAnyObjectByType<GameInput>();
+
+        gameInput.OnInteractAction += GameInput_OnInteractAction;
     }
 
+
     private void Update()
+    {
+        HandleMovement();
+        HandleInteractins();
+    }
+
+    private void HandleMovement()
     {
         Vector2 intputVector = gameInput.GetMovementVectorNormalized();
         Vector3 moveDir = new Vector3(intputVector.x, 0, intputVector.y);
@@ -56,6 +92,51 @@ public class Player : MonoBehaviour
         // Rotate the player to face the direction of movement
         transform.forward = Vector3.Slerp(transform.forward, moveDir, Time.deltaTime * 10f);
     }
+
+    private void HandleInteractins()
+    {
+        Vector2 intputVector = gameInput.GetMovementVectorNormalized();
+        Vector3 moveDir = new Vector3(intputVector.x, 0, intputVector.y);
+
+        if (moveDir != Vector3.zero)
+        {
+            lastIteractDir = moveDir;
+        }
+
+        if(Physics.Raycast(transform.position, lastIteractDir, out RaycastHit hit, interactDistance, interactLayerMask))
+        {
+            if (hit.transform != null && hit.transform.TryGetComponent(out ClearCounter clearCounter))
+            {
+                if (clearCounter != selectedClearCounter)
+                {
+                    SetSelectedCounter(clearCounter);
+                }
+            }
+            else
+            {
+                SetSelectedCounter(null);
+            }
+        }
+        else
+        {
+            SetSelectedCounter(null);
+        }
+    }
+    private void GameInput_OnInteractAction()
+    {
+        if(selectedClearCounter != null)
+        {
+            selectedClearCounter.Interact();
+        }
+    }
+
+    private void SetSelectedCounter(ClearCounter clearCounter)
+    {
+        this.selectedClearCounter = clearCounter;
+        OnSelectedCounterChanged?.Invoke(new OnSelectedCounterChangedEventArgs { selectedCounter = selectedClearCounter });
+        
+    }
+
 
     private bool CanMove(Vector3 moveDir, float moveDistance)
     {
