@@ -3,24 +3,27 @@ using UnityEngine;
 
 public class SelectedCounterVisual : MonoBehaviour
 {
-    private ClearCounter clearCounter;
-    [SerializeField] private GameObject visualGO;
+    private BaseCounter baseCounter;
+    [SerializeField] private GameObject[] visualGO;
 
     private void Start()
     {
-        clearCounter = GetComponentInParent<ClearCounter>();
+        baseCounter = GetComponentInParent<BaseCounter>();
         Player.Instance.OnSelectedCounterChanged += Player_OnSelectedCounterChanged;
     }
 
     private void Player_OnSelectedCounterChanged(Player.OnSelectedCounterChangedEventArgs args)
     {
 
-        Show(args.selectedCounter == clearCounter);
+        Show(args.selectedCounter == baseCounter);
 
     }
 
     private void Show(bool v)
     {
-        visualGO.SetActive(v);
+        foreach (GameObject go in visualGO)
+        {
+            go.SetActive(v);
+        }
     }
 }
