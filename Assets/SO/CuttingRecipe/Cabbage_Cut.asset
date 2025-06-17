@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: Cabbage_Cut
   m_EditorClassIdentifier: 
   input: {fileID: 11400000, guid: 444a00820081d454392d73cceaea25b7, type: 2}
-  output: {fileID: 11400000, guid: 444a00820081d454392d73cceaea25b7, type: 2}
+  output: {fileID: 11400000, guid: 67390fcc9e31b8547ac1eb9f362b2756, type: 2}
+  cuttingProgressMax: 4
