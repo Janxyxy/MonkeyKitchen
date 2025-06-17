@@ -14,39 +14,45 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentVersion: 1.01
   subtype: kitchenchaos
-  lastShownTimestamp: 1749899600
+  lastShownTimestamp: 1750147777
   lastUpdateResponse:
-    version: 1.00
+    version: 1.01
     versionUrl: https://unitycodemonkey.com
-  checkedLastUpdateTimestamp: 1749899600
+  checkedLastUpdateTimestamp: 1750147777
   lastQOTDResponse:
-    questionId: 163
-    questionText: What is the purpose of Unity Hub?
-    answerA: Provide a space for the community to interact
-    answerB: Manage different Unity versions and Projects
-    answerC: Dashboard for Unity services
+    questionId: 191
+    questionText: 'Is there a problem with this code?
+
+      <p>private void SetCameraFollowFunc(Func&lt;Vector3&gt;
+      cameraFollowFunc) { }</p>
+
+      <p>SetCameraFollowFunc(() =&gt; new Vector3(1,
+      0, 0));</p>'
+    answerA: No
+    answerB: 'Should be: SetCameraFollowFunc(() =&#62; return new Vector3(1, 0, 0));'
+    answerC: 'Should be: SetCameraFollowFunc((Vector3(1, 0, 0)) =&#62; { });'
     answerD: 
     answerE: 
-  lastQotdTimestamp: 1749899600
+  lastQotdTimestamp: 1750147777
   lastDynamicHeaderResponse:
-    topImageUrl: https://codemonkeyexternal.blob.core.windows.net/external/Misc/humbleBundleSyntyMar25.png
-    topText: Make ANY game with these awesome Assets! (96% OFF ENDS SOON!)
-    topLink: humblebundle
-    bottomText: Learn Unity DOTS for MASSIVE Performance Boosts! (and make an RTS)
-    bottomLink: dotscourse
-  lastDynamicHeaderTimestamp: 1749899600
+    topImageUrl: https://codemonkeyexternal.blob.core.windows.net/external/Misc/ultimateOverview70_6FreeUpdate.png
+    topText: Learn how to use 70 Tools and Features! (Unity 6 Updated)
+    topLink: ultimateunityoverview
+    bottomText: My 10+ Years of C# Knowledge in 1 Course!
+    bottomLink: csharpcourse
+  lastDynamicHeaderTimestamp: 1750147777
   websiteLatestMessage:
     text: <a href="https://cmonkey.co/freecourses">Check out all my FREE courses!
       Click here!</a>
-  websiteLatestMessageTimestamp: 1749899600
+  websiteLatestMessageTimestamp: 1750147777
   websiteLatestVideos:
     videos:
-    - youTubeId: ZIg7VoD9ptI
-      title: The FUTURE of Unity in 2025 and BEYOND!
-    - youTubeId: W_XOZAWJF24
-      title: I made the MOST PROFITABLE Game as a Test!
-    - youTubeId: J0KMvH-yFmA
-      title: TOP 10 NEW Games, Made with Unity! (FEBRUARY 2025)
-    - youTubeId: DOSLOa7cnoE
-      title: I SHOULD have done this a long time ago, and YOU too!
-  websiteLatestVideosTimestamp: 1749899600
+    - youTubeId: AD5HtjUun5g
+      title: Which Unity Version should you use?
+    - youTubeId: 2UP_g58SDKM
+      title: TOP 10 FREE NEW Assets JUNE 2025!
+    - youTubeId: jPXFBmfInRQ
+      title: YOU can CHANGE the FUTURE of Unity!
+    - youTubeId: IPwIpYP3dvg
+      title: 70 Unity Tools and Features in 16 MINUTES!
+  websiteLatestVideosTimestamp: 1750147777
