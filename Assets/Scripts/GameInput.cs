@@ -6,6 +6,7 @@ public class GameInput : MonoBehaviour
     private PlayerInputActions playerInputActions;
 
     public event Action OnInteractAction;
+    public event Action OnInteractAlternativeAction;
 
     private void Awake()
     {
@@ -13,11 +14,17 @@ public class GameInput : MonoBehaviour
         playerInputActions.Player.Enable();
 
         playerInputActions.Player.Interact.performed += ctx => Interact();
+        playerInputActions.Player.InteractAlternative.performed += ctx => InteractAlternative();
     }
 
     private void Interact()
     {
         OnInteractAction?.Invoke();
+    }
+
+    private void InteractAlternative()
+    {
+        OnInteractAlternativeAction?.Invoke();
     }
 
     internal Vector2 GetMovementVectorNormalized()

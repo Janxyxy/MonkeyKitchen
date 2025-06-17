@@ -1,9 +1,8 @@
 using UnityEngine;
 
-public class ClearCounter : BaseCounter
+public class CuttingCounter : BaseCounter
 {
     [SerializeField] private KitchenObjectSO kitchenObjectSO;
-
 
     internal override void Interact(Player player)
     {
@@ -20,7 +19,7 @@ public class ClearCounter : BaseCounter
         }
         else
         {
-            if(player.HasKitchenObject())
+            if (player.HasKitchenObject())
             {
                 // Player already has a KitchenObject, so we cannot set the ClearCounter's KitchenObject as the player's.
             }
@@ -28,6 +27,16 @@ public class ClearCounter : BaseCounter
             {
                 GetKitchenObject().SetKitchenObjectParent(player);
             }
+        }
+    }
+
+    internal override void InteractAlternative(Player player)
+    {
+        if (HasKitchenObject())
+        {
+            GetKitchenObject().DestroySelf();
+
+            KitchenObject.SpawnKitchenObject(kitchenObjectSO, this);
         }
     }
 }

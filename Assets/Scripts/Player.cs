@@ -45,6 +45,7 @@ public class Player : MonoBehaviour, IKitchenObjectParent
         gameInput = FindAnyObjectByType<GameInput>();
 
         gameInput.OnInteractAction += GameInput_OnInteractAction;
+        gameInput.OnInteractAlternativeAction += GameInput_OnInteractAlternativeAction;
     }
 
 
@@ -67,7 +68,7 @@ public class Player : MonoBehaviour, IKitchenObjectParent
             // Attemt to move in the X direction
             Vector3 xMoveDir = new Vector3(moveDir.x, 0, 0).normalized;
 
-            canMove = CanMove(xMoveDir, moveDistance);
+            canMove = moveDir.x != 0 && CanMove(xMoveDir, moveDistance);
 
             if (canMove)
             {
@@ -77,7 +78,7 @@ public class Player : MonoBehaviour, IKitchenObjectParent
             {
                 // Attempt to move in the Z direction
                 Vector3 zMoveDir = new Vector3(0, 0, moveDir.z).normalized;
-                canMove = CanMove(zMoveDir, moveDistance);
+                canMove = moveDir.z != 0 && CanMove(zMoveDir, moveDistance);
                 if (canMove)
                 {
                     moveDir = zMoveDir;
@@ -130,6 +131,14 @@ public class Player : MonoBehaviour, IKitchenObjectParent
         if (selectedClearCounter != null)
         {
             selectedClearCounter.Interact(this);
+        }
+    }
+
+    private void GameInput_OnInteractAlternativeAction()
+    {
+        if (selectedClearCounter != null)
+        {
+            selectedClearCounter.InteractAlternative(this);
         }
     }
 
