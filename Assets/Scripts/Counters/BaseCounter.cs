@@ -13,7 +13,8 @@ public class BaseCounter : MonoBehaviour, IKitchenObjectParent
 
     internal virtual void InteractAlternative(Player player)
     {
-        Debug.LogError($"{gameObject.name} does not have an InteractAlternative method implemented.");
+        // Not all counters will implement an alternative interaction
+        //Debug.LogError($"{gameObject.name} does not have an InteractAlternative method implemented.");
     }
 
     public Transform GetKitchenObjectFollowTransform()
