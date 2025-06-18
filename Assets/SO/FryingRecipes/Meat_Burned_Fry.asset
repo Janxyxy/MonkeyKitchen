@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 024b5643c8c5c3448a32ca6838b68f87, type: 3}
   m_Name: Meat_Burned_Fry
   m_EditorClassIdentifier: 
-  input: {fileID: 11400000, guid: d1a51b9648bc79e45ad1689a677b4d90, type: 2}
-  output: {fileID: 11400000, guid: 798434b4b4da4784a831013979e770d1, type: 2}
-  cuttingProgressMax: 0
+  input: {fileID: 11400000, guid: 798434b4b4da4784a831013979e770d1, type: 2}
+  output: {fileID: 11400000, guid: 38ba36747e910f948ac9281b2b6ec622, type: 2}
+  fryingProgressMax: 4
