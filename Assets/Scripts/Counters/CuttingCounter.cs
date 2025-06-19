@@ -1,13 +1,13 @@
 using System;
 using UnityEngine;
 
-public class CuttingCounter : BaseCounter
+public class CuttingCounter : BaseCounter, IHasProgress
 {
     [SerializeField] private CuttingRecipeSO[] cuttingRecipeSOs;
 
     private int cuttingProgress;
 
-    internal event Action<float> OnCuttingProgressChanged;
+    public event Action<float> OnProgressChanged;
     internal event Action OnCut;
     internal event Action OnCutFinal;
 
@@ -24,7 +24,7 @@ public class CuttingCounter : BaseCounter
                     cuttingProgress = 0;
 
                     CuttingRecipeSO cuttingRecipeSO = GetCuttingRecipeSoWithInput(GetKitchenObject());
-                    OnCuttingProgressChanged.Invoke((float)cuttingProgress / cuttingRecipeSO.cuttingProgressMax);
+                    OnProgressChanged.Invoke((float)cuttingProgress / cuttingRecipeSO.cuttingProgressMax);
                 }
             }
             else
@@ -53,11 +53,12 @@ public class CuttingCounter : BaseCounter
 
             CuttingRecipeSO cuttingRecipeSO = GetCuttingRecipeSoWithInput(GetKitchenObject());
 
-            OnCuttingProgressChanged.Invoke((float)cuttingProgress / cuttingRecipeSO.cuttingProgressMax);
+            OnProgressChanged.Invoke((float)cuttingProgress / cuttingRecipeSO.cuttingProgressMax);
 
             if (cuttingProgress >= cuttingRecipeSO.cuttingProgressMax)
             {
                 OnCutFinal?.Invoke();
+                Debug.Log($"Cutting completed for {GetKitchenObject().GetKitchenObjectSO().name}.");
                 KitchenObjectSO outputKitchenObject = GetOutputForInput(GetKitchenObject());
 
                 GetKitchenObject().DestroySelf();

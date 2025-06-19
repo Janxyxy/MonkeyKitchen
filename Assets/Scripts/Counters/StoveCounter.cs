@@ -1,16 +1,20 @@
+using System;
 using UnityEngine;
 
-public class StoveCounter : BaseCounter
+public class StoveCounter : BaseCounter, IHasProgress
 {
     [SerializeField] private FryingRecipeSO[] fryingRecipeSOs;
 
+    public event Action<float> OnProgressChanged;
     private float fryingTimer;
     private float burningTimer;
 
     private FryingRecipeSO currentFryingRecipeSO;
     private FryingState fryingState;
 
-    private enum FryingState
+    public event Action<FryingState> OnFryingStateChanged;
+
+    public enum FryingState
     {
         Idle,
         Frying,
@@ -45,6 +49,8 @@ public class StoveCounter : BaseCounter
                         burningTimer = 0f;
 
                         currentFryingRecipeSO = GetFryingRecipeSoWithInput(GetKitchenObject());
+
+                        OnFryingStateChanged?.Invoke(fryingState);
                     }
                     break;
                 case FryingState.Fried:
@@ -57,6 +63,7 @@ public class StoveCounter : BaseCounter
                         KitchenObject.SpawnKitchenObject(currentFryingRecipeSO.output, this);
 
                         fryingState = FryingState.Burned;
+                        OnFryingStateChanged?.Invoke(fryingState);
                     }
                     break;
                 case FryingState.Burned:
@@ -80,6 +87,8 @@ public class StoveCounter : BaseCounter
                     fryingState = FryingState.Frying;
                     fryingTimer = 0f;
 
+                    OnFryingStateChanged?.Invoke(fryingState);
+
                     // TODO: progress later
                 }
             }
@@ -97,6 +106,8 @@ public class StoveCounter : BaseCounter
             else
             {
                 GetKitchenObject().SetKitchenObjectParent(player);
+                fryingState = FryingState.Idle;
+                OnFryingStateChanged?.Invoke(fryingState);
             }
         }
     }
