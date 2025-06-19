@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class ClearCounter : BaseCounter
 {
-    [SerializeField] private KitchenObjectSO kitchenObjectSO;
+    //[SerializeField] private KitchenObjectSO kitchenObjectSO;
 
 
     internal override void Interact(Player player)
@@ -20,9 +20,28 @@ public class ClearCounter : BaseCounter
         }
         else
         {
-            if(player.HasKitchenObject())
+            if (player.HasKitchenObject())
             {
+                PlateKitchenObject plateKitchenObject;
                 // Player already has a KitchenObject, so we cannot set the ClearCounter's KitchenObject as the player's.
+                if (player.GetKitchenObject().TryGetPlate(out plateKitchenObject))
+                {
+                    // Player is holding a plate
+                    if (plateKitchenObject.TryAddIngredient(GetKitchenObject().GetKitchenObjectSO()))
+                    {
+                        GetKitchenObject().DestroySelf();
+                    }
+                }
+                else
+                {
+                    if (GetKitchenObject().TryGetPlate(out plateKitchenObject))
+                    {
+                        if (plateKitchenObject.TryAddIngredient(player.GetKitchenObject().GetKitchenObjectSO()))
+                        {
+                            player.GetKitchenObject().DestroySelf();
+                        }
+                    }
+                }
             }
             else
             {
