@@ -73,6 +73,7 @@ public class StoveCounter : BaseCounter, IHasProgress
                     }
                     break;
                 case FryingState.Burned:
+                    OnProgressChanged?.Invoke(0f);
                     break;
             }
         }
