@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,6 +8,12 @@ public class PlateKitchenObject : KitchenObject
 
     private List<KitchenObjectSO> ingredientList;
 
+    public event Action<OnIngredientAddedEventArgs> OnIngredientAdded;
+
+    public class OnIngredientAddedEventArgs
+    {
+        public KitchenObjectSO kitchenObjectSO;
+    }
 
     private void Awake()
     {
@@ -25,6 +32,11 @@ public class PlateKitchenObject : KitchenObject
         }
      
         ingredientList.Add(kitchenObjectSO);
+        OnIngredientAdded?.Invoke(new OnIngredientAddedEventArgs
+        {
+            kitchenObjectSO = kitchenObjectSO
+        });
+
         return true;
     }
 }
