@@ -39,6 +39,8 @@ public class StoveCounter : BaseCounter, IHasProgress
                 case FryingState.Frying:
                     fryingTimer += Time.deltaTime;
 
+                    OnProgressChanged?.Invoke(fryingTimer / currentFryingRecipeSO.fryingProgressMax);
+
                     if (fryingTimer > currentFryingRecipeSO.fryingProgressMax)
                     {
                         // Fried
@@ -56,6 +58,8 @@ public class StoveCounter : BaseCounter, IHasProgress
                 case FryingState.Fried:
                     burningTimer += Time.deltaTime;
 
+                    OnProgressChanged?.Invoke(burningTimer / currentFryingRecipeSO.fryingProgressMax);
+
                     if (burningTimer > currentFryingRecipeSO.fryingProgressMax)
                     {
                         // Fried
@@ -64,6 +68,8 @@ public class StoveCounter : BaseCounter, IHasProgress
 
                         fryingState = FryingState.Burned;
                         OnFryingStateChanged?.Invoke(fryingState);
+
+                        OnProgressChanged?.Invoke(0f);
                     }
                     break;
                 case FryingState.Burned:
@@ -88,8 +94,7 @@ public class StoveCounter : BaseCounter, IHasProgress
                     fryingTimer = 0f;
 
                     OnFryingStateChanged?.Invoke(fryingState);
-
-                    // TODO: progress later
+                    OnProgressChanged?.Invoke(fryingTimer / currentFryingRecipeSO.fryingProgressMax);
                 }
             }
             else
@@ -107,7 +112,9 @@ public class StoveCounter : BaseCounter, IHasProgress
             {
                 GetKitchenObject().SetKitchenObjectParent(player);
                 fryingState = FryingState.Idle;
+
                 OnFryingStateChanged?.Invoke(fryingState);
+                OnProgressChanged?.Invoke(0);
             }
         }
     }
