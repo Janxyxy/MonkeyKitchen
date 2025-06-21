@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5916952256457669812}
   - component: {fileID: 2841260066285350781}
   m_Layer: 0
-  m_Name: Quad
+  m_Name: MovingArrow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
