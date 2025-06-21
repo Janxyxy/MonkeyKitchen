@@ -13,6 +13,9 @@ public class DeliveryManager : MonoBehaviour
 
     public static DeliveryManager Instance { get; private set; }
 
+    public event Action OnRecipeDelivered;
+    public event Action OnRecipeSpawned;
+
     private void Awake()
     {
         waitinRecipeSOList = new List<RecipeSO>();
@@ -45,6 +48,8 @@ public class DeliveryManager : MonoBehaviour
         {
             RecipeSO newRecipeSO = recipeListSO.recipesList[UnityEngine.Random.Range(0, recipeListSO.recipesList.Count)];
             waitinRecipeSOList.Add(newRecipeSO);
+
+            OnRecipeSpawned?.Invoke();
         }
         else if (recipeListSO.recipesList.Count == 0)
         {
@@ -85,7 +90,8 @@ public class DeliveryManager : MonoBehaviour
                 {
                     // Recipe matches
                     waitinRecipeSOList.RemoveAt(i);
-                    Debug.Log($"Delivered correct recipe: {recipeSO.recipeName}");
+
+                    OnRecipeDelivered?.Invoke();
                     return;
                 }
             }
@@ -93,5 +99,10 @@ public class DeliveryManager : MonoBehaviour
 
         // No matching recipe found
         Debug.Log("No matching recipe found for delivery.");
+    }
+
+    internal IEnumerable<RecipeSO> GetWaitingRecipeSOList()
+    {
+        return waitinRecipeSOList;
     }
 }

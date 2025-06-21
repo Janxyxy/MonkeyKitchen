@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0ea543a452a8754d82c4fa85cc5cc00, type: 3}
   m_Name: CheeseBurger
   m_EditorClassIdentifier: 
-  recipeName: CheeseBurger
+  recipeName: Cheese Burger
   kitchenObjectSOList:
   - {fileID: 11400000, guid: 1962fca434a3e5748a1e2dc41e91d1c8, type: 2}
   - {fileID: 11400000, guid: 798434b4b4da4784a831013979e770d1, type: 2}
