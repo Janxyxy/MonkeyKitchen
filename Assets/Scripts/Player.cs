@@ -27,6 +27,8 @@ public class Player : MonoBehaviour, IKitchenObjectParent
         public BaseCounter selectedCounter;
     }
 
+    public event Action<Transform> OnPickSomething;
+
     public static Player Instance { get; private set; }
 
     private void Awake()
@@ -168,6 +170,11 @@ public class Player : MonoBehaviour, IKitchenObjectParent
     public void SetKitchenObject(KitchenObject kitchenObject)
     {
         this.kitchenObject = kitchenObject;
+
+        if (kitchenObject != null)
+        {
+            OnPickSomething?.Invoke(this.transform);
+        }
     }
 
     public KitchenObject GetKitchenObject()

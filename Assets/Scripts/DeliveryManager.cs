@@ -16,6 +16,9 @@ public class DeliveryManager : MonoBehaviour
     public event Action OnRecipeDelivered;
     public event Action OnRecipeSpawned;
 
+    public event Action OnRecipeSuccess;
+    public event Action OnRecipeFailure;
+
     private void Awake()
     {
         waitinRecipeSOList = new List<RecipeSO>();
@@ -92,12 +95,14 @@ public class DeliveryManager : MonoBehaviour
                     waitinRecipeSOList.RemoveAt(i);
 
                     OnRecipeDelivered?.Invoke();
+                    OnRecipeSuccess?.Invoke();
                     return;
                 }
             }
         }
 
         // No matching recipe found
+        OnRecipeFailure?.Invoke();
         Debug.Log("No matching recipe found for delivery.");
     }
 

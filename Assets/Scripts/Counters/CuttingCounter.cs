@@ -8,8 +8,11 @@ public class CuttingCounter : BaseCounter, IHasProgress
     private int cuttingProgress;
 
     public event Action<float> OnProgressChanged;
-    internal event Action OnCut;
-    internal event Action OnCutFinal;
+
+    public event Action OnCut;
+    public event Action OnCutFinal;
+
+    public static event Action<Transform> OnAnyCut;
 
     internal override void Interact(Player player)
     {
@@ -62,6 +65,8 @@ public class CuttingCounter : BaseCounter, IHasProgress
             CuttingRecipeSO cuttingRecipeSO = GetCuttingRecipeSoWithInput(GetKitchenObject());
 
             OnProgressChanged.Invoke((float)cuttingProgress / cuttingRecipeSO.cuttingProgressMax);
+
+            OnAnyCut?.Invoke(this.transform);
 
             if (cuttingProgress >= cuttingRecipeSO.cuttingProgressMax)
             {
