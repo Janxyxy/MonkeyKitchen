@@ -130,6 +130,9 @@ public class Player : MonoBehaviour, IKitchenObjectParent
     }
     private void GameInput_OnInteractAction()
     {
+        if (!GameManager.Instance.IsGamePlaing())
+            return;
+
         if (selectedClearCounter != null)
         {
             selectedClearCounter.Interact(this);
@@ -138,6 +141,9 @@ public class Player : MonoBehaviour, IKitchenObjectParent
 
     private void GameInput_OnInteractAlternativeAction()
     {
+        if (!GameManager.Instance.IsGamePlaing())
+            return;
+
         if (selectedClearCounter != null)
         {
             selectedClearCounter.InteractAlternative(this);
