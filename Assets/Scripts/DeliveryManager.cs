@@ -10,6 +10,7 @@ public class DeliveryManager : MonoBehaviour
     private float spawnTimer;
     private float spawnTimerMax = 5f;
     private int maxWaitingRecipes = 5;
+    private int successfullRecipesDeliveredCount = 0;
 
     public static DeliveryManager Instance { get; private set; }
 
@@ -92,6 +93,7 @@ public class DeliveryManager : MonoBehaviour
                 if (allIngredientsMatch)
                 {
                     // Recipe matches
+                    successfullRecipesDeliveredCount++;
                     waitinRecipeSOList.RemoveAt(i);
 
                     OnRecipeDelivered?.Invoke();
@@ -109,5 +111,10 @@ public class DeliveryManager : MonoBehaviour
     internal IEnumerable<RecipeSO> GetWaitingRecipeSOList()
     {
         return waitinRecipeSOList;
+    }
+
+    internal int GetSuccessfullRecipesDeliveredCount()
+    {
+        return successfullRecipesDeliveredCount;
     }
 }

@@ -6,7 +6,8 @@ public class GameManager : MonoBehaviour
     private GameState currentGameState;
     private float waitingToStartTimer = 1f;
     private float countdownToStartTimer = 3f;
-    private float gameplayTimer = 10f;
+    private float gameplayTimer;
+    private float gameplayTimerMax = 10f;
 
 
     public enum GameState
@@ -49,9 +50,9 @@ public class GameManager : MonoBehaviour
                 countdownToStartTimer -= Time.deltaTime;
                 if (countdownToStartTimer <= 0f)
                 {
+                    gameplayTimer = gameplayTimerMax;
                     currentGameState = GameState.Playing;
                     OnStateChanged?.Invoke(currentGameState);
-
                 }
                 break;
             case GameState.Playing:
@@ -82,5 +83,9 @@ public class GameManager : MonoBehaviour
     internal float GetCountdownToStartTimer()
     {
         return countdownToStartTimer;
+    }
+    internal float GetGameplayTimerNormalized()
+    {
+        return 1 - gameplayTimer / gameplayTimerMax;
     }
 }
