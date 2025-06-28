@@ -14,39 +14,45 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentVersion: 1.01
   subtype: kitchenchaos
-  lastShownTimestamp: 1750583228
+  lastShownTimestamp: 1751103404
   lastUpdateResponse:
     version: 1.01
     versionUrl: https://unitycodemonkey.com
-  checkedLastUpdateTimestamp: 1750583228
+  checkedLastUpdateTimestamp: 1751103404
   lastQOTDResponse:
-    questionId: 193
-    questionText: What will happen on January 19, 2038 at 03:14:07?
-    answerA: Armagedon
-    answerB: End of Unix Time
-    answerC: Half-Life 3 release date
+    questionId: 195
+    questionText: 'Does this code have an error?
+
+      <p>int myNewX = 10;</p>
+
+      <p>transform.position.x
+      = myNewX;</p>'
+    answerA: Yes
+    answerB: No
+    answerC: Only if GameObject does not have a Transform component
     answerD: 
     answerE: 
-  lastQotdTimestamp: 1750583228
+  lastQotdTimestamp: 1751103404
   lastDynamicHeaderResponse:
-    topImageUrl: https://codemonkeyexternal.blob.core.windows.net/external/Misc/ultimateOverview70_6FreeUpdate.png
-    topText: Learn how to use 70 Tools and Features! (Unity 6 Updated)
-    topLink: ultimateunityoverview
+    topImageUrl: https://codemonkeyexternal.blob.core.windows.net/external/Misc/humbleJun25MegaMix.png
+    topText: AWESOME NEW Unity Bundle with Tools and Assets 97% OFF!
+    topLink: humblebundle
     bottomText: My 10+ Years of C# Knowledge in 1 Course!
     bottomLink: csharpcourse
-  lastDynamicHeaderTimestamp: 1750583228
+  lastDynamicHeaderTimestamp: 1751103404
   websiteLatestMessage:
     text: <a href="https://cmonkey.co/freecourses">Check out all my FREE courses!
       Click here!</a>
-  websiteLatestMessageTimestamp: 1750583228
+  websiteLatestMessageTimestamp: 1751103404
   websiteLatestVideos:
     videos:
+    - youTubeId: du6S-egCx1s
+      title: Getting Started with Unity AI (Assistant, Generators, Developer Data
+        Framework)
+    - youTubeId: tFU4cO_m5Xo
+      title: TOP 10 NEW Games, Made with Unity! (MAY 2025)
+    - youTubeId: iN3Q0RBiWk8
+      title: What do the BEST Programmers do differently?
     - youTubeId: Nv-pG1v_TaM
       title: TOP 10 NEW Systems and Tools JUNE 2025! | Unity Asset Store
-    - youTubeId: KrjXYXGdnj8
-      title: How to BREAK your Desktop!
-    - youTubeId: AD5HtjUun5g
-      title: Which Unity Version should you use?
-    - youTubeId: 2UP_g58SDKM
-      title: TOP 10 FREE NEW Assets JUNE 2025!
-  websiteLatestVideosTimestamp: 1750583228
+  websiteLatestVideosTimestamp: 1751103404
