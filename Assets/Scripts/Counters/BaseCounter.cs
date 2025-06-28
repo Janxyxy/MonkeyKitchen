@@ -9,6 +9,11 @@ public class BaseCounter : MonoBehaviour, IKitchenObjectParent
 
     public static event Action<Transform> OnAnyObjectPlacedOnCounter;
 
+    internal static void ResetStaticData()
+    {
+        OnAnyObjectPlacedOnCounter = null;
+    }
+
     internal virtual void Interact(Player player)
     {
         Debug.LogError($"{gameObject.name} does not have an Interact method implemented.");

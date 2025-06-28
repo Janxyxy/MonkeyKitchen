@@ -7,14 +7,34 @@ public class GameInput : MonoBehaviour
 
     public event Action OnInteractAction;
     public event Action OnInteractAlternativeAction;
+    public event Action OnPauseAction;
+
+    public static GameInput Instance { get; private set; }
 
     private void Awake()
     {
+        if (Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        else
+        {
+            Instance = this;
+        }
+
         playerInputActions = new PlayerInputActions();
         playerInputActions.Player.Enable();
 
         playerInputActions.Player.Interact.performed += ctx => Interact();
         playerInputActions.Player.InteractAlternative.performed += ctx => InteractAlternative();
+        playerInputActions.Player.Pause.performed += ctx => PauseGame();
+
+    }
+
+    private void PauseGame()
+    {
+        OnPauseAction?.Invoke();
     }
 
     private void Interact()
@@ -35,5 +55,14 @@ public class GameInput : MonoBehaviour
         intputVector = intputVector.normalized;
 
         return intputVector;
+    }
+
+    private void OnDestroy()
+    {
+        playerInputActions.Player.Interact.performed -= ctx => Interact();
+        playerInputActions.Player.InteractAlternative.performed -= ctx => InteractAlternative();
+        playerInputActions.Player.Pause.performed -= ctx => PauseGame();
+
+        playerInputActions.Dispose();
     }
 }

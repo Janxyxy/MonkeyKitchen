@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
     private float countdownToStartTimer = 3f;
     private float gameplayTimer;
     private float gameplayTimerMax = 10f;
+    private bool isGamePaused = false;
 
 
     public enum GameState
@@ -19,8 +20,34 @@ public class GameManager : MonoBehaviour
     };
 
     public event Action<GameState> OnStateChanged;
+    public event Action<bool> OnPaused;
 
     public static GameManager Instance { get; private set; }
+
+    private void Start()
+    {
+        GameInput.Instance.OnPauseAction += GameInput_OnPauseAction;
+    }
+
+    private void GameInput_OnPauseAction()
+    {
+        TogglePauseGame();
+    }
+
+    internal void TogglePauseGame ()
+    {
+        isGamePaused = !isGamePaused;
+        OnPaused?.Invoke(isGamePaused);
+
+        if (isGamePaused)
+        {
+            Time.timeScale = 0f; 
+        }
+        else
+        {
+            Time.timeScale = 1f; 
+        }
+    }
 
     private void Awake()
     {
