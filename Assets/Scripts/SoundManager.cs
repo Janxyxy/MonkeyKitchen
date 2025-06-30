@@ -22,6 +22,8 @@ public class SoundManager : MonoBehaviour
         {
             Instance = this;
         }
+
+        volume = PlayerPrefs.GetFloat(VOLUME_KEY, 1f);
     }
 
     private void Start()
@@ -90,6 +92,7 @@ public class SoundManager : MonoBehaviour
         }
 
         PlayerPrefs.SetFloat(VOLUME_KEY, volume);
+        PlayerPrefs.Save();
     }
 
     internal float GetVolume()

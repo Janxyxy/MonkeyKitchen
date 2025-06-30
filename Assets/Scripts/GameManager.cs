@@ -7,7 +7,7 @@ public class GameManager : MonoBehaviour
     private float waitingToStartTimer = 1f;
     private float countdownToStartTimer = 3f;
     private float gameplayTimer;
-    private float gameplayTimerMax = 10f;
+    private float gameplayTimerMax = 60f;
     private bool isGamePaused = false;
 
 
