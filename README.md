@@ -7,3 +7,5 @@ MonkeyKitchen is a Unity project built step-by-step while following the Kitchen 
 🧩 Assets: Using free assets provided with the course.  
 🛠️ Unity version: 60000.29f1  
 📚 This project is for learning purposes.
+
+![MonkeyKitchenPreview](MonkeyKitchenPreview.png)
