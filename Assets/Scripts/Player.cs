@@ -1,7 +1,8 @@
 using System;
 using UnityEngine;
+using Unity.Netcode;
 
-public class Player : MonoBehaviour, IKitchenObjectParent
+public class Player : NetworkBehaviour, IKitchenObjectParent
 {
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 5f;
@@ -12,7 +13,6 @@ public class Player : MonoBehaviour, IKitchenObjectParent
     [SerializeField] private float interactDistance = 2;
     [SerializeField] private LayerMask interactLayerMask;
 
-    private GameInput gameInput;
 
     private bool isMoving;
     private Vector3 lastIteractDir;
@@ -29,37 +29,35 @@ public class Player : MonoBehaviour, IKitchenObjectParent
 
     public event Action<Transform> OnPickSomething;
 
-    public static Player Instance { get; private set; }
+    //public static Player Instance { get; private set; }
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            Debug.LogWarning("Multiple Player instances detected. Destroying duplicate.");
-            return;
-        }
-        Instance = this;
+        //Instance = this;
     }
 
     private void Start()
     {
-        gameInput = FindAnyObjectByType<GameInput>();
-
-        gameInput.OnInteractAction += GameInput_OnInteractAction;
-        gameInput.OnInteractAlternativeAction += GameInput_OnInteractAlternativeAction;
+        GameInput.Instance.OnInteractAction += GameInput_OnInteractAction;
+        GameInput.Instance.OnInteractAlternativeAction += GameInput_OnInteractAlternativeAction;
     }
 
 
     private void Update()
     {
+        if (!IsOwner)
+        {
+            return;
+        }
+
         HandleMovement();
         HandleInteractins();
     }
 
+
     private void HandleMovement()
     {
-        Vector2 intputVector = gameInput.GetMovementVectorNormalized();
+        Vector2 intputVector = GameInput.Instance.GetMovementVectorNormalized();
         Vector3 moveDir = new Vector3(intputVector.x, 0, intputVector.y);
 
         float moveDistance = moveSpeed * Time.deltaTime;
@@ -103,7 +101,7 @@ public class Player : MonoBehaviour, IKitchenObjectParent
 
     private void HandleInteractins()
     {
-        Vector2 intputVector = gameInput.GetMovementVectorNormalized();
+        Vector2 intputVector = GameInput.Instance.GetMovementVectorNormalized();
         Vector3 moveDir = new Vector3(intputVector.x, 0, intputVector.y);
 
         if (moveDir != Vector3.zero)
@@ -199,4 +197,56 @@ public class Player : MonoBehaviour, IKitchenObjectParent
     {
         return kitchenObject != null;
     }
+
+    /*
+       private void HandleMovementServerAuth()
+    {
+        Vector2 intputVector = GameInput.Instance.GetMovementVectorNormalized();
+        HandleMovementServerRpc(intputVector);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void HandleMovementServerRpc(Vector2 intputVector)
+    {
+        Vector3 moveDir = new Vector3(intputVector.x, 0, intputVector.y);
+
+        float moveDistance = moveSpeed * Time.deltaTime;
+        bool canMove = CanMove(moveDir, moveDistance);
+
+        float movementThreshold = 0.5f;
+
+        if (!canMove)
+        {
+            // Attemt to move in the X direction
+            Vector3 xMoveDir = new Vector3(moveDir.x, 0, 0).normalized;
+
+            canMove = (moveDir.x < -movementThreshold || moveDir.x > movementThreshold) && CanMove(xMoveDir, moveDistance);
+
+            if (canMove)
+            {
+                moveDir = xMoveDir;
+            }
+            else
+            {
+                // Attempt to move in the Z direction
+                Vector3 zMoveDir = new Vector3(0, 0, moveDir.z).normalized;
+                canMove = (moveDir.z < -movementThreshold || moveDir.z > movementThreshold) && CanMove(zMoveDir, moveDistance);
+                if (canMove)
+                {
+                    moveDir = zMoveDir;
+                }
+            }
+        }
+
+        if (canMove)
+        {
+            //transform.Translate(moveDir * Time.deltaTime, Space.World);
+            transform.position += moveDir * moveDistance;
+            isMoving = intputVector != Vector2.zero;
+        }
+
+        // Rotate the player to face the direction of movement
+        transform.forward = Vector3.Slerp(transform.forward, moveDir, Time.deltaTime * 10f);
+    }
+    */
 }

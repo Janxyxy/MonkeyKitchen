@@ -14,6 +14,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/LoadingScene.unity
     guid: 6cf53c5889ae46948b287fa53c73e85c
+  - enabled: 1
+    path: Assets/NGO_Minimal_Setup/NGO_Setup.unity
+    guid: c67216868182b9b4d90d2d5c0cca36ea
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: d61b2b3d9ed2e444d857b96ba73b03d3, type: 3}
   m_UseUCBPForAssetBundles: 0

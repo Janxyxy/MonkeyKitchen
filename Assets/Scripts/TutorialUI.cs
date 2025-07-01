@@ -29,7 +29,7 @@ public class TutorialUI : MonoBehaviour
 
     private void GameManager_OnStateChanged(GameManager.GameState state)
     {
-        if(state == GameManager.GameState.Countown)
+        if (state == GameManager.GameState.Countown || state == GameManager.GameState.Playing)
         {
             Show(false);
         }

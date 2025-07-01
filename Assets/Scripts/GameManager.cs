@@ -6,7 +6,7 @@ public class GameManager : MonoBehaviour
     private GameState currentGameState;
     private float countdownToStartTimer = 5f;
     private float gameplayTimer;
-    private float gameplayTimerMax = 60f;
+    private float gameplayTimerMax = 300f;
     private bool isGamePaused = false;
 
 
@@ -27,6 +27,10 @@ public class GameManager : MonoBehaviour
     {
         GameInput.Instance.OnPauseAction += GameInput_OnPauseAction;
         GameInput.Instance.OnInteractAction += GameInput_OnInteractAction;
+
+        //DEBUG TRIGGER START AUT
+        currentGameState = GameState.Countown;
+        OnStateChanged?.Invoke(currentGameState);
     }
 
     private void GameInput_OnInteractAction()
