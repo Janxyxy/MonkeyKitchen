@@ -18,6 +18,11 @@ public class PlatesCounter : BaseCounter
 
     private void Update()
     {
+        if(!GameManager.Instance.IsGamePlaing())
+        {
+            return;
+        }
+
         plateSpawnTimer += Time.deltaTime;
         if (plateSpawnTimer >= plateSpawnTime)
         {

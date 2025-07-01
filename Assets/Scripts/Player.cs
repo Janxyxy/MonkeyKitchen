@@ -65,12 +65,14 @@ public class Player : MonoBehaviour, IKitchenObjectParent
         float moveDistance = moveSpeed * Time.deltaTime;
         bool canMove = CanMove(moveDir, moveDistance);
 
+        float movementThreshold = 0.5f;
+
         if (!canMove)
         {
             // Attemt to move in the X direction
             Vector3 xMoveDir = new Vector3(moveDir.x, 0, 0).normalized;
 
-            canMove = moveDir.x != 0 && CanMove(xMoveDir, moveDistance);
+            canMove = (moveDir.x < -movementThreshold || moveDir.x > movementThreshold) && CanMove(xMoveDir, moveDistance);
 
             if (canMove)
             {
@@ -80,7 +82,7 @@ public class Player : MonoBehaviour, IKitchenObjectParent
             {
                 // Attempt to move in the Z direction
                 Vector3 zMoveDir = new Vector3(0, 0, moveDir.z).normalized;
-                canMove = moveDir.z != 0 && CanMove(zMoveDir, moveDistance);
+                canMove = (moveDir.z < -movementThreshold || moveDir.z > movementThreshold) && CanMove(zMoveDir, moveDistance);
                 if (canMove)
                 {
                     moveDir = zMoveDir;

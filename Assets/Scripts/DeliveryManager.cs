@@ -38,6 +38,11 @@ public class DeliveryManager : MonoBehaviour
 
     private void Update()
     {
+        if(!GameManager.Instance.IsGamePlaing())
+        {
+            return;
+        }
+
         spawnTimer += Time.deltaTime;
         if (spawnTimer >= spawnTimerMax)
         {

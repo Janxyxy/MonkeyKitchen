@@ -76,7 +76,6 @@ public class CuttingCounter : BaseCounter, IHasProgress
             if (cuttingProgress >= cuttingRecipeSO.cuttingProgressMax)
             {
                 OnCutFinal?.Invoke();
-                Debug.Log($"Cutting completed for {GetKitchenObject().GetKitchenObjectSO().name}.");
                 KitchenObjectSO outputKitchenObject = GetOutputForInput(GetKitchenObject());
 
                 GetKitchenObject().DestroySelf();

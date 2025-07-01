@@ -1,9 +1,11 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class SoundManager : MonoBehaviour
 {
     [SerializeField] private AudioClipsRefsSO audioClipsRefsSO;
+
 
     private float volume = 1f;
 
@@ -60,7 +62,6 @@ public class SoundManager : MonoBehaviour
         PlaySound(audioClipsRefsSO.chop, transform.position);
     }
 
-
     private void DeliveryManager_OnRecipeFailure()
     {
         DeliveryCounter deliveryCounter = DeliveryCounter.Instance;
@@ -73,14 +74,19 @@ public class SoundManager : MonoBehaviour
         PlaySound(audioClipsRefsSO.deliverySuccess, deliveryCounter.transform.position);
     }
 
-    private void PlaySound(AudioClip[] audioClipsArray, Vector3 position, float volume = 1)
+    private void PlaySound(AudioClip[] audioClipsArray, Vector3 position, float volumeMult = 1)
     {
-        AudioSource.PlayClipAtPoint(audioClipsArray[UnityEngine.Random.Range(0, audioClipsArray.Length)], position, volume);
+        AudioSource.PlayClipAtPoint(audioClipsArray[UnityEngine.Random.Range(0, audioClipsArray.Length)], position, volumeMult * volume);
     }
 
     private void PlaySound(AudioClip audioClip, Vector3 position, float volumeMultiplier = 1)
     {
         AudioSource.PlayClipAtPoint(audioClip, position, volumeMultiplier * volume);
+    }
+
+    internal void PlayCountDownSound()
+    {
+        PlaySound(audioClipsRefsSO.warning, Vector3.zero, 0.75f);
     }
 
     internal void ChangeVolume()

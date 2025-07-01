@@ -12,10 +12,13 @@ public class GameInput : MonoBehaviour
     public event Action OnInteractAction;
     public event Action OnInteractAlternativeAction;
     public event Action OnPauseAction;
+    public event Action OnBindingRebind;
 
     private const string PPLAYER_PREFS_BINDINGS = "GameInputBindings";
 
     public static GameInput Instance { get; private set; }
+
+    private ControlScheme currentControlScheme;
 
     public enum Binding
     {
@@ -25,35 +28,51 @@ public class GameInput : MonoBehaviour
         Move_Right,
         Interact,
         InteractAlternative,
-        Pause
+        Pause,
+        Gamepad_Interact,
+        Gamepad_InteractAlternative,
+        Gamepad_Pause
+    }
+
+    public enum ControlScheme
+    {
+        Keyboard,
+        Gamepad
     }
 
     private void Awake()
     {
         if (Instance != null)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        else
-        {
-            Instance = this;
-        }
+        { Destroy(gameObject); return; }
+        Instance = this;
 
         playerInputActions = new PlayerInputActions();
-
-        // Load saved bindings if they exist
-        if (PlayerPrefs.HasKey(PPLAYER_PREFS_BINDINGS))
-        {
-            string savedBindings = PlayerPrefs.GetString(PPLAYER_PREFS_BINDINGS);
-            playerInputActions.LoadBindingOverridesFromJson(savedBindings);
-        }
-
         playerInputActions.Player.Enable();
 
-        playerInputActions.Player.Interact.performed += ctx => Interact();
-        playerInputActions.Player.InteractAlternative.performed += ctx => InteractAlternative();
-        playerInputActions.Player.Pause.performed += ctx => PauseGame();
+        void Register(InputAction action, Action callback)
+        {
+            action.performed += ctx =>
+            {
+                UpdateControlScheme(ctx.control.device); 
+                callback?.Invoke();
+            };
+        }
+
+        Register(playerInputActions.Player.Interact, Interact);
+        Register(playerInputActions.Player.InteractAlternative, InteractAlternative);
+        Register(playerInputActions.Player.Pause, PauseGame);
+        Register(playerInputActions.Player.Move, null); 
+    }
+
+    private void UpdateControlScheme(InputDevice device)
+    {
+        var scheme = device is Gamepad ? ControlScheme.Gamepad : ControlScheme.Keyboard;
+        if (scheme != currentControlScheme)
+        {
+            currentControlScheme = scheme;
+            if (debugMode)
+                Debug.Log($"Switched to {currentControlScheme}");
+        }
     }
 
     private void PauseGame()
@@ -94,6 +113,7 @@ public class GameInput : MonoBehaviour
     {
         switch (binding)
         {
+            // Keyboard bindings
             case Binding.Move_Up:
                 return playerInputActions.Player.Move.bindings[1].ToDisplayString();
             case Binding.Move_Down:
@@ -108,6 +128,15 @@ public class GameInput : MonoBehaviour
                 return playerInputActions.Player.InteractAlternative.bindings[0].ToDisplayString();
             case Binding.Pause:
                 return playerInputActions.Player.Pause.bindings[0].ToDisplayString();
+
+            // Gamepad bindings
+            case Binding.Gamepad_Interact:
+                return playerInputActions.Player.Interact.bindings[1].ToDisplayString();
+            case Binding.Gamepad_InteractAlternative:
+                return playerInputActions.Player.InteractAlternative.bindings[1].ToDisplayString();
+            case Binding.Gamepad_Pause:
+                return playerInputActions.Player.Pause.bindings[1].ToDisplayString();
+
             default:
                 throw new ArgumentOutOfRangeException(nameof(binding), binding, null);
         }
@@ -156,6 +185,18 @@ public class GameInput : MonoBehaviour
                 inputAction = playerInputActions.Player.Pause;
                 bindingIndex = 0;
                 break;
+            case Binding.Gamepad_Interact:
+                inputAction = playerInputActions.Player.Interact;
+                bindingIndex = 1;
+                break;
+            case Binding.Gamepad_InteractAlternative:
+                inputAction = playerInputActions.Player.InteractAlternative;
+                bindingIndex = 1;
+                break;
+            case Binding.Gamepad_Pause:
+                inputAction = playerInputActions.Player.Pause;
+                bindingIndex = 1;
+                break;
 
         }
 
@@ -180,6 +221,11 @@ public class GameInput : MonoBehaviour
             PlayerPrefs.SetString(PPLAYER_PREFS_BINDINGS, playerInputActions.SaveBindingOverridesAsJson());
             PlayerPrefs.Save();
 
+            OnBindingRebind?.Invoke();
+
         }).Start(); // Ensure the rebinding process starts
     }
+
+
+    internal bool IsUsingKeyboard() => currentControlScheme == ControlScheme.Keyboard;
 }

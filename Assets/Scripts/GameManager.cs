@@ -4,8 +4,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     private GameState currentGameState;
-    private float waitingToStartTimer = 1f;
-    private float countdownToStartTimer = 3f;
+    private float countdownToStartTimer = 5f;
     private float gameplayTimer;
     private float gameplayTimerMax = 60f;
     private bool isGamePaused = false;
@@ -27,6 +26,21 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         GameInput.Instance.OnPauseAction += GameInput_OnPauseAction;
+        GameInput.Instance.OnInteractAction += GameInput_OnInteractAction;
+    }
+
+    private void GameInput_OnInteractAction()
+    {
+        if(currentGameState == GameState.WaitingToStart)
+        {
+            currentGameState = GameState.Countown;
+            OnStateChanged?.Invoke(currentGameState);
+        }
+        //else if (currentGameState == GameState.GameOver)
+        //{
+        //    currentGameState = GameState.WaitingToStart;
+        //    OnStateChanged?.Invoke(currentGameState);
+        //}
     }
 
     private void GameInput_OnPauseAction()
@@ -65,13 +79,7 @@ public class GameManager : MonoBehaviour
         switch (currentGameState)
         {
             case GameState.WaitingToStart:
-                waitingToStartTimer -= Time.deltaTime;
-                if (waitingToStartTimer <= 0f)
-                {
-                    currentGameState = GameState.Countown;
-                    OnStateChanged?.Invoke(currentGameState);
 
-                }
                 break;
             case GameState.Countown:
                 countdownToStartTimer -= Time.deltaTime;
