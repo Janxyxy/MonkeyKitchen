@@ -14,44 +14,44 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentVersion: 1.01
   subtype: kitchenchaos
-  lastShownTimestamp: 1751651639
+  lastShownTimestamp: 1762001167
   lastUpdateResponse:
     version: 1.01
     versionUrl: https://unitycodemonkey.com
-  checkedLastUpdateTimestamp: 1751651640
+  checkedLastUpdateTimestamp: 1762001167
   lastQOTDResponse:
-    questionId: 197
-    questionText: What is the difference between Action&lt;float&gt; and Func&lt;float&gt;
-      ?
-    answerA: Both are the same
-    answerB: Action&#60;float&#62; takes float parameter and Func&#60;float&#62;
-      returns float
-    answerC: Func&#60;float&#62; takes float parameter and Action&#60;float&#62;
-      returns float
+    questionId: 237
+    questionText: 'What will be the value of isOne?
+
+      <p>float oneThird = 1f
+      / 3f;</p>
+
+      <p>bool isOne = (oneThird * 3f) == 1f;</p>'
+    answerA: true
+    answerB: false
+    answerC: 
     answerD: 
     answerE: 
-  lastQotdTimestamp: 1751651640
+  lastQotdTimestamp: 1762001167
   lastDynamicHeaderResponse:
-    topImageUrl: https://codemonkeyexternal.blob.core.windows.net/external/Misc/cSharpCourseNewBeginnerProjects.png
-    topText: I just updated my C# course with 10 FUN Beginner Projects! Learn by
-      DOING!
-    topLink: csharpcourse
-    bottomText: AWESOME NEW Unity Bundle with Tools and Assets 97% OFF!
-    bottomLink: humblebundle
-  lastDynamicHeaderTimestamp: 1751651640
+    topImageUrl: https://codemonkeyexternal.blob.core.windows.net/external/Misc/gameDevReport_2.png
+    topText: Stay up to date with the latest in Game Dev straight to your inbox!
+    topLink: gamedevreport
+    bottomText: My 10+ Years of C# Knowledge in 1 Course!
+    bottomLink: csharpcourse
+  lastDynamicHeaderTimestamp: 1762001167
   websiteLatestMessage:
     text: <a href="https://cmonkey.co/freecourses">Check out all my FREE courses!
       Click here!</a>
-  websiteLatestMessageTimestamp: 1751651640
+  websiteLatestMessageTimestamp: 1762001167
   websiteLatestVideos:
     videos:
-    - youTubeId: Lj_CgExP3AA
-      title: You Game ANCHOR is super important! Do you know it?
-    - youTubeId: K0di3MEm70U
-      title: Learn C# Making Beginner Projects! (FizzBuzz, Hangman - SOON!)
-    - youTubeId: 6WUJ3z9EGnI
-      title: TOP 20 Visual Assets to INSPIRE YOU! (JUNE 2025)
-    - youTubeId: du6S-egCx1s
-      title: Getting Started with Unity AI (Assistant, Generators, Developer Data
-        Framework)
-  websiteLatestVideosTimestamp: 1751651640
+    - youTubeId: g8RbZ8ymWas
+      title: 7 SPOOKY Game Dev MYTHs that aren't REAL!
+    - youTubeId: UGhId8Zd3eM
+      title: BEST NEW Visual Assets to INSPIRE YOU! (OCTOBER 2025)
+    - youTubeId: qX5m_EH4Wbo
+      title: How to FAIL with 100k WISHLISTS!
+    - youTubeId: wBoRaQQm9WE
+      title: TOP 10 NEW Systems and Tools OCTOBER 2025! | Unity Asset Store
+  websiteLatestVideosTimestamp: 1762001167

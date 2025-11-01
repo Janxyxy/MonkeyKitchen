@@ -10,9 +10,25 @@ public class SelectedCounterVisual : MonoBehaviour
     {
         baseCounter = GetComponentInParent<BaseCounter>();
 
-        //Player.Instance.OnSelectedCounterChanged += Player_OnSelectedCounterChanged;
+        if (Player.LocalInstance != null)
+        {
+            Player.LocalInstance.OnSelectedCounterChanged += Player_OnSelectedCounterChanged;
+        }
+        else
+        {
+            Player.OnAnyPlayerSpawned += Player_OnAnyPlayerSpawned;
+        }
 
         Show(false);
+    }
+
+    private void Player_OnAnyPlayerSpawned()
+    {
+        if (Player.LocalInstance != null)
+        {
+            Player.LocalInstance.OnSelectedCounterChanged -= Player_OnSelectedCounterChanged;
+            Player.LocalInstance.OnSelectedCounterChanged += Player_OnSelectedCounterChanged;
+        }
     }
 
     private void Player_OnSelectedCounterChanged(Player.OnSelectedCounterChangedEventArgs args)

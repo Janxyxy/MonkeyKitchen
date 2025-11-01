@@ -28,7 +28,7 @@ public class GameManager : MonoBehaviour
         GameInput.Instance.OnPauseAction += GameInput_OnPauseAction;
         GameInput.Instance.OnInteractAction += GameInput_OnInteractAction;
 
-        //DEBUG TRIGGER START AUT
+        // DEBUG START GAME IMMEDIATELY
         currentGameState = GameState.Countown;
         OnStateChanged?.Invoke(currentGameState);
     }

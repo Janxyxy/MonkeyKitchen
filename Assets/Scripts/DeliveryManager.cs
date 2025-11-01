@@ -1,16 +1,18 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
+using VInspector;
 
-public class DeliveryManager : MonoBehaviour
-{
+
+public class DeliveryManager : NetworkBehaviour { 
     [SerializeField] private RecipeListSO recipeListSO;
 
     private List<RecipeSO> waitinRecipeSOList;
     private float spawnTimer;
     private float spawnTimerMax = 5f;
     private int maxWaitingRecipes = 5;
-    private int successfullRecipesDeliveredCount = 0;
+    [SerializeField, VInspector.ReadOnly] private int successfullRecipesDeliveredCount = 0;
 
     public static DeliveryManager Instance { get; private set; }
 
@@ -38,7 +40,12 @@ public class DeliveryManager : MonoBehaviour
 
     private void Update()
     {
-        if(!GameManager.Instance.IsGamePlaing())
+        if (!IsServer)
+        {
+            return;
+        }
+
+        if (!GameManager.Instance.IsGamePlaing())
         {
             return;
         }
@@ -51,19 +58,29 @@ public class DeliveryManager : MonoBehaviour
         }
     }
 
+
     private void AddRecipe()
     {
         if (waitinRecipeSOList.Count < maxWaitingRecipes && recipeListSO.recipesList.Count > 0)
         {
-            RecipeSO newRecipeSO = recipeListSO.recipesList[UnityEngine.Random.Range(0, recipeListSO.recipesList.Count)];
-            waitinRecipeSOList.Add(newRecipeSO);
+            int waitingRecipeSOIndex = UnityEngine.Random.Range(0, recipeListSO.recipesList.Count);
 
-            OnRecipeSpawned?.Invoke();
+            SpawnNewWaitingRecipieClientRpc(waitingRecipeSOIndex);
+          
         }
         else if (recipeListSO.recipesList.Count == 0)
         {
             Debug.LogWarning("Recipe list is empty. Cannot add a new recipe.");
         }
+    }
+
+
+    [ClientRpc]
+    private void SpawnNewWaitingRecipieClientRpc(int waitingRecipeSOIndex)
+    {
+        RecipeSO newRecipeSO = recipeListSO.recipesList[waitingRecipeSOIndex];
+        waitinRecipeSOList.Add(newRecipeSO);
+        OnRecipeSpawned?.Invoke();
     }
 
     internal void DeliverRecipe(PlateKitchenObject plateKitchenObject)
@@ -98,19 +115,43 @@ public class DeliveryManager : MonoBehaviour
                 if (allIngredientsMatch)
                 {
                     // Recipe matches
-                    successfullRecipesDeliveredCount++;
-                    waitinRecipeSOList.RemoveAt(i);
-
-                    OnRecipeDelivered?.Invoke();
-                    OnRecipeSuccess?.Invoke();
+                    DeliverCorrectRecipeServerRpc(i);
                     return;
                 }
             }
         }
 
         // No matching recipe found
-        OnRecipeFailure?.Invoke();
+        DeliverIncorectRecipeServerRpc();
         Debug.Log("No matching recipe found for delivery.");
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void DeliverIncorectRecipeServerRpc()
+    {
+        DeliverIncorectRecipeClientRPC();
+    }
+
+    [ClientRpc]
+    private void DeliverIncorectRecipeClientRPC()
+    {
+        OnRecipeFailure?.Invoke();
+    }
+
+    [ServerRpc(RequireOwnership =false)]
+    private void DeliverCorrectRecipeServerRpc(int waitingRecipeSOListIndex)
+    {
+        DeliverCorrectRecipeClientRpc(waitingRecipeSOListIndex);
+    }
+
+    [ClientRpc]
+    private void DeliverCorrectRecipeClientRpc(int waitingRecipeSOListIndex)
+    {
+        successfullRecipesDeliveredCount++;
+        waitinRecipeSOList.RemoveAt(waitingRecipeSOListIndex);
+
+        OnRecipeDelivered?.Invoke();
+        OnRecipeSuccess?.Invoke();
     }
 
     internal IEnumerable<RecipeSO> GetWaitingRecipeSOList()
