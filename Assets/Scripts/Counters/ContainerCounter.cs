@@ -18,7 +18,7 @@ public class ContainerCounter : BaseCounter
         }
     }
 
-    [ServerRpc(RequireOwnership =false)]
+    [ServerRpc]
     private void InteractLogicServerRpc()
     {
         InteractLogicClientRpc();

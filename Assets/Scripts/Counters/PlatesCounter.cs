@@ -1,7 +1,6 @@
-using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 
 public class PlatesCounter : BaseCounter
 {
@@ -18,7 +17,12 @@ public class PlatesCounter : BaseCounter
 
     private void Update()
     {
-        if(!GameManager.Instance.IsGamePlaing())
+        if (!IsServer)
+        {
+            return;
+        }
+
+        if (!GameManager.Instance.IsGamePlaing())
         {
             return;
         }
@@ -27,9 +31,24 @@ public class PlatesCounter : BaseCounter
         if (plateSpawnTimer >= plateSpawnTime)
         {
             plateSpawnTimer = 0f;
-            SpawnPlate();
+            SpawnPlateServerRPC();
         }
     }
+
+
+    // ServerRPC není potøeba protože bìží pouze na serveru, ale code monkey to tak má tak co už
+    [ServerRpc]
+    private void SpawnPlateServerRPC()
+    {
+        SpawnPlateClientRPC();
+    }
+
+    [ClientRpc]
+    private void SpawnPlateClientRPC()
+    {
+        SpawnPlate();
+    }
+
 
     internal override void Interact(Player player)
     {
@@ -37,10 +56,9 @@ public class PlatesCounter : BaseCounter
         {
             if (platesSpawnedAmmount > 0)
             {
-                platesSpawnedAmmount--;
                 KitchenObject.SpawnKitchenObject(plateKitchenObjectSO, player);
 
-                OnPlateRemoved?.Invoke();
+                InteractLogicServerRpc();
             }
             else
             {
@@ -51,6 +69,20 @@ public class PlatesCounter : BaseCounter
         {
             Debug.Log("Player already has a kitchen object.");
         }
+    }
+
+
+    [ServerRpc(RequireOwnership = false)]
+    private void InteractLogicServerRpc()
+    {
+        InteractLogicClientRpc();
+    }
+
+    [ClientRpc]
+    private void InteractLogicClientRpc()
+    {
+        platesSpawnedAmmount--;
+        OnPlateRemoved?.Invoke();
     }
 
     private void SpawnPlate()
