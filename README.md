@@ -5,7 +5,7 @@ MonkeyKitchen is a Unity project built step-by-step while following the Kitchen 
 
 🎯 Goal: Improve Unity game development skills based on the [Kitchen Chaos Course](https://unitycodemonkey.com/kitchenchaoscourse.php) by Code Monkey  
 🧩 Assets: Using free assets provided with the course.  
-🛠️ Unity version: 60000.29f1  
+🛠️ Unity version:  6000.02.6f2
 📚 This project is for learning purposes.  
 
 #### Tasks
