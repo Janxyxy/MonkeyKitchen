@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using Unity.Netcode;
 
 public class ContainerCounter : BaseCounter
 {
@@ -12,23 +13,20 @@ public class ContainerCounter : BaseCounter
         if(!player.HasKitchenObject())
         {
             KitchenObject.SpawnKitchenObject(kitchenObjectSO, player);
-            OnContainerCounterInteract?.Invoke();
+
+            InteractLogicServerRpc();
         }
     }
 
-    internal override void InteractAlternative(Player player)
+    [ServerRpc(RequireOwnership =false)]
+    private void InteractLogicServerRpc()
     {
-        if (HasKitchenObject())
-        {
-            if (player.HasKitchenObject())
-            {
-                // Player already has a KitchenObject, so we cannot set the ContainerCounter's KitchenObject as the player's.
-            }
-            else
-            {
-                GetKitchenObject().SetKitchenObjectParent(player);
-                OnContainerCounterInteract?.Invoke();
-            }
-        }
+        InteractLogicClientRpc();
+    }
+
+    [ClientRpc]
+    private void InteractLogicClientRpc()
+    {
+        OnContainerCounterInteract?.Invoke();
     }
 }

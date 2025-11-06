@@ -15,10 +15,12 @@ public class PlateKitchenObject : KitchenObject
         public KitchenObjectSO kitchenObjectSO;
     }
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         ingredientList = new List<KitchenObjectSO>();
     }
+
     internal bool TryAddIngredient(KitchenObjectSO kitchenObjectSO)
     {
         if(!validKitchenObjectSOList.Contains(kitchenObjectSO))

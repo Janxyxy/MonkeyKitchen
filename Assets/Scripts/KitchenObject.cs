@@ -3,9 +3,15 @@ using Unity.Netcode;
 
 public class KitchenObject : NetworkBehaviour
 {
-    [SerializeField] private KitchenObjectSO kitchenObjectSO;
+    [SerializeField] private KitchenObjectSO kitchenObjectSO; 
 
     private IKitchenObjectParent kitchenObjectParent;
+    private FollowTransform followTransform;
+
+    protected virtual void Awake()
+    {
+        followTransform = GetComponent<FollowTransform>();
+    }
 
     internal KitchenObjectSO GetKitchenObjectSO()
     {
@@ -13,23 +19,35 @@ public class KitchenObject : NetworkBehaviour
     }
 
     internal void SetKitchenObjectParent(IKitchenObjectParent kitchenObjectParent)
-    {
-        if(this.kitchenObjectParent != null)
+    {  
+        SetKitchenObjectParentServerRpc(kitchenObjectParent.GetNeworkObjetc());
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SetKitchenObjectParentServerRpc(NetworkObjectReference kitchenObjectParentNetworkObjectReference) {
+        SetKitchenObjectParentClientRpc(kitchenObjectParentNetworkObjectReference);
+    }
+
+    [ClientRpc]
+    private void SetKitchenObjectParentClientRpc(NetworkObjectReference kitchenObjectParentNetworkObjectReference) {
+        kitchenObjectParentNetworkObjectReference.TryGet(out NetworkObject kitchenObjectParentNetworkObject);
+        IKitchenObjectParent kitchenObjectParent = kitchenObjectParentNetworkObject.GetComponent<IKitchenObjectParent>();
+
+        if (this.kitchenObjectParent != null)
         {
             this.kitchenObjectParent.ClearKitchenObject();
         }
 
         this.kitchenObjectParent = kitchenObjectParent;
 
-        if(kitchenObjectParent.HasKitchenObject())
+        if (kitchenObjectParent.HasKitchenObject())
         {
             Debug.LogError("KitchenObjectparent already has a KitchenObject!");
         }
 
         kitchenObjectParent.SetKitchenObject(this);
 
-        //transform.SetParent(kitchenObjectParent.GetKitchenObjectFollowTransform());
-        //transform.localPosition = Vector3.zero; 
+        followTransform.SetTargetTransform(kitchenObjectParent.GetKitchenObjectFollowTransform());
     }
 
     internal IKitchenObjectParent GetClearCounter()
