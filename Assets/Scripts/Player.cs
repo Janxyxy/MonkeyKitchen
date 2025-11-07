@@ -1,7 +1,7 @@
 using System;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.InputSystem.LowLevel;
+using System.Collections.Generic;
 
 public class Player : NetworkBehaviour, IKitchenObjectParent
 {
@@ -13,6 +13,10 @@ public class Player : NetworkBehaviour, IKitchenObjectParent
     [Header("Interaction Settings")]
     [SerializeField] private float interactDistance = 2;
     [SerializeField] private LayerMask interactLayerMask;
+    [SerializeField] private LayerMask collisiaonsLayerMask;
+
+    [Header("Spawn")]
+    [SerializeField] private List<Vector3> spawnPosotions;
 
 
     private bool isMoving;
@@ -43,6 +47,8 @@ public class Player : NetworkBehaviour, IKitchenObjectParent
             LocalInstance = this;
         }
 
+
+        transform.position = spawnPosotions[(int)OwnerClientId];
         OnAnyPlayerSpawned?.Invoke();
     }
     internal static void ResetStaticData()
@@ -66,7 +72,7 @@ public class Player : NetworkBehaviour, IKitchenObjectParent
         }
 
         HandleMovement();
-        HandleInteractins();
+        HandleInteractions();
     }
 
 
@@ -114,7 +120,7 @@ public class Player : NetworkBehaviour, IKitchenObjectParent
         transform.forward = Vector3.Slerp(transform.forward, moveDir, Time.deltaTime * 10f);
     }
 
-    private void HandleInteractins()
+    private void HandleInteractions()
     {
         Vector2 intputVector = GameInput.Instance.GetMovementVectorNormalized();
         Vector3 moveDir = new Vector3(intputVector.x, 0, intputVector.y);
@@ -175,7 +181,7 @@ public class Player : NetworkBehaviour, IKitchenObjectParent
 
     private bool CanMove(Vector3 moveDir, float moveDistance)
     {
-        return !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, playerRadus, moveDir, moveDistance);
+        return !Physics.BoxCast(transform.position, Vector3.one * playerRadus, moveDir, Quaternion.identity, moveDistance, collisiaonsLayerMask);
     }
 
     internal bool IsMoving()
