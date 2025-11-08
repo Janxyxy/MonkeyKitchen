@@ -13,6 +13,7 @@ public class GameManager : NetworkBehaviour
     // Pause
     private bool isLocalGamePaused = false;
     private NetworkVariable<bool> isGamePaused = new NetworkVariable<bool>(false);
+    private bool autoTestGamePausedState = false;
 
     private Dictionary<ulong, bool> playerReadyDictionary;
     private Dictionary<ulong, bool> playerPausedDictionary;
@@ -57,6 +58,26 @@ public class GameManager : NetworkBehaviour
     {
         currentGameState.OnValueChanged += CurrentGameState_OnValueChanged;
         isGamePaused.OnValueChanged += IsLocalGamePaused_OnValueChanged;
+
+        if (IsServer)
+        {
+            NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_OnClientDisconnectCallback;
+        }
+    }
+
+    private void NetworkManager_OnClientDisconnectCallback(ulong clientId)
+    {
+        if (playerPausedDictionary.ContainsKey(clientId))
+        {
+            playerPausedDictionary.Remove(clientId);
+        }
+
+        if (playerReadyDictionary.ContainsKey(clientId))
+        {
+            playerReadyDictionary.Remove(clientId);
+        }
+
+        autoTestGamePausedState = true;
     }
 
     private void IsLocalGamePaused_OnValueChanged(bool previousValue, bool newValue)
@@ -101,7 +122,7 @@ public class GameManager : NetworkBehaviour
             if (!playerReadyDictionary.ContainsKey(clientId) || !playerReadyDictionary[clientId])
             {
                 allclientsReady = false;
-                return;
+                break;
             }
         }
 
@@ -147,14 +168,24 @@ public class GameManager : NetworkBehaviour
 
     private void TestGamePausedState()
     {
+        if (NetworkManager.Singleton == null)
+        {
+            Debug.LogWarning("NetworkManager is null, cannot test game paused state.");
+            isGamePaused.Value = false;
+            return;
+        }
+
         foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
         {
             if (playerPausedDictionary.ContainsKey(clientId) && playerPausedDictionary[clientId])
             {
+                // This player is paused
                 isGamePaused.Value = true;
                 return;
-            }  OnMultiplayerGamePaused.Invoke(true);
+            }
         }
+
+        // All players are unpaused
         isGamePaused.Value = false;
     }
 
@@ -189,6 +220,18 @@ public class GameManager : NetworkBehaviour
         }
     }
 
+    private void LateUpdate()
+    {
+        if (!IsServer)
+            return;
+
+        if (autoTestGamePausedState)
+        {
+            autoTestGamePausedState = false;
+            TestGamePausedState();
+        }
+    }
+
     internal bool IsGamePlaing()
     {
         return currentGameState.Value == GameState.Playing;
@@ -206,12 +249,5 @@ public class GameManager : NetworkBehaviour
     internal float GetGameplayTimerNormalized()
     {
         return 1 - gameplayTimer.Value / gameplayTimerMax;
-    }
-    public override void OnDestroy()
-    {
-        if (Instance == this)
-        {
-            Instance = null;
-        }
     }
 }

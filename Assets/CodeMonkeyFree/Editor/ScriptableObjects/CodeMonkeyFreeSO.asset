@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentVersion: 1.01
   subtype: kitchenchaos
-  lastShownTimestamp: 1762547654
+  lastShownTimestamp: 1762634067
   lastUpdateResponse:
     version: 1.01
     versionUrl: https://unitycodemonkey.com
-  checkedLastUpdateTimestamp: 1762547654
+  checkedLastUpdateTimestamp: 1762634068
   lastQOTDResponse:
     questionId: 239
     questionText: What is the difference between Action&lt;float&gt; and Func&lt;float&gt;
@@ -30,26 +30,26 @@ MonoBehaviour:
       returns float
     answerD: 
     answerE: 
-  lastQotdTimestamp: 1762547654
+  lastQotdTimestamp: 1762634068
   lastDynamicHeaderResponse:
     topImageUrl: https://codemonkeyexternal.blob.core.windows.net/external/Misc/gameDevReport_2.png
     topText: Stay up to date with the latest in Game Dev straight to your inbox!
     topLink: gamedevreport
     bottomText: My 10+ Years of C# Knowledge in 1 Course!
     bottomLink: csharpcourse
-  lastDynamicHeaderTimestamp: 1762547654
+  lastDynamicHeaderTimestamp: 1762634068
   websiteLatestMessage:
     text: <a href="https://cmonkey.co/freecourses">Check out all my FREE courses!
       Click here!</a>
-  websiteLatestMessageTimestamp: 1762547654
+  websiteLatestMessageTimestamp: 1762634068
   websiteLatestVideos:
     videos:
+    - youTubeId: Gl0leX7gqVA
+      title: Dispelling the Unity looks bad MYTH!
     - youTubeId: 0zljaBBiOXo
       title: Unity turns 20! Get FREE Assets and Make Games!
     - youTubeId: slMe3sbS_KM
       title: What is Unity Studio?
     - youTubeId: mtNIuwGDYUc
       title: Do GAMERS Like Pixel Art?
-    - youTubeId: SFVSgORBgOg
-      title: How do you REFACTOR code? (EXTREMELY Important!)
-  websiteLatestVideosTimestamp: 1762547654
+  websiteLatestVideosTimestamp: 1762634068
