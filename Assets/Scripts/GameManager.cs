@@ -1,13 +1,17 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 
-public class GameManager : MonoBehaviour
+public class GameManager : NetworkBehaviour
 {
-    private GameState currentGameState;
-    private float countdownToStartTimer = 5f;
-    private float gameplayTimer;
-    private float gameplayTimerMax = 300f;
+    private NetworkVariable<GameState> currentGameState = new NetworkVariable<GameState>(GameState.WaitingToStart);
+    private NetworkVariable<float> countdownToStartTimer = new NetworkVariable<float>(3f);
+    private NetworkVariable<float> gameplayTimer = new NetworkVariable<float>(0f);
+    private float gameplayTimerMax = 90f; 
     private bool isGamePaused = false;
+
+    private Dictionary<ulong, bool> PlayerReadyDictionary;
 
 
     public enum GameState
@@ -20,6 +24,9 @@ public class GameManager : MonoBehaviour
 
     public event Action<GameState> OnStateChanged;
     public event Action<bool> OnPaused;
+    public event Action<bool> OnLocalPlayerReadyChanged;
+
+    private bool isLocalPlayerReady;
 
     public static GameManager Instance { get; private set; }
 
@@ -28,23 +35,49 @@ public class GameManager : MonoBehaviour
         GameInput.Instance.OnPauseAction += GameInput_OnPauseAction;
         GameInput.Instance.OnInteractAction += GameInput_OnInteractAction;
 
-        // DEBUG START GAME IMMEDIATELY
-        currentGameState = GameState.Countown;
-        OnStateChanged?.Invoke(currentGameState);
+        PlayerReadyDictionary = new Dictionary<ulong, bool>();
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        currentGameState.OnValueChanged += CurrentGameState_OnValueChanged;
+    }
+    private void CurrentGameState_OnValueChanged(GameState previousValue, GameState newValue)
+    {
+        OnStateChanged?.Invoke(currentGameState.Value);
     }
 
     private void GameInput_OnInteractAction()
     {
-        if(currentGameState == GameState.WaitingToStart)
+        if (currentGameState.Value == GameState.WaitingToStart)
         {
-            currentGameState = GameState.Countown;
-            OnStateChanged?.Invoke(currentGameState);
+            isLocalPlayerReady = true;
+            OnLocalPlayerReadyChanged?.Invoke(isLocalPlayerReady);
+
+            SetPlayerReadyServerRpc();
         }
-        //else if (currentGameState == GameState.GameOver)
-        //{
-        //    currentGameState = GameState.WaitingToStart;
-        //    OnStateChanged?.Invoke(currentGameState);
-        //}
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SetPlayerReadyServerRpc(ServerRpcParams serverRpcParams = default)
+    {
+        ulong senderClientId = serverRpcParams.Receive.SenderClientId;
+        PlayerReadyDictionary[senderClientId] = true;
+
+        bool allclientsReady = true;
+        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
+        {
+            if (!PlayerReadyDictionary.ContainsKey(clientId) || !PlayerReadyDictionary[clientId])
+            {
+                allclientsReady = false;
+                return;
+            }
+        }
+
+        if (allclientsReady)
+        {
+            currentGameState.Value = GameState.Countown;
+        }
     }
 
     private void GameInput_OnPauseAction()
@@ -52,18 +85,18 @@ public class GameManager : MonoBehaviour
         TogglePauseGame();
     }
 
-    internal void TogglePauseGame ()
+    internal void TogglePauseGame()
     {
         isGamePaused = !isGamePaused;
         OnPaused?.Invoke(isGamePaused);
 
         if (isGamePaused)
         {
-            Time.timeScale = 0f; 
+            Time.timeScale = 0f;
         }
         else
         {
-            Time.timeScale = 1f; 
+            Time.timeScale = 1f;
         }
     }
 
@@ -76,55 +109,55 @@ public class GameManager : MonoBehaviour
         }
         Instance = this;
 
-        currentGameState = GameState.WaitingToStart;
+        currentGameState.Value = GameState.WaitingToStart;
     }
     private void Update()
     {
-        switch (currentGameState)
+        if (!IsServer)
+            return;
+
+        switch (currentGameState.Value)
         {
             case GameState.WaitingToStart:
 
                 break;
             case GameState.Countown:
-                countdownToStartTimer -= Time.deltaTime;
-                if (countdownToStartTimer <= 0f)
+                countdownToStartTimer.Value -= Time.deltaTime;
+                if (countdownToStartTimer.Value <= 0f)
                 {
-                    gameplayTimer = gameplayTimerMax;
-                    currentGameState = GameState.Playing;
-                    OnStateChanged?.Invoke(currentGameState);
+                    gameplayTimer.Value = gameplayTimerMax;
+                    currentGameState.Value = GameState.Playing;
                 }
                 break;
             case GameState.Playing:
-                gameplayTimer -= Time.deltaTime;
-                if (gameplayTimer <= 0f)
+                gameplayTimer.Value -= Time.deltaTime;
+                if (gameplayTimer.Value <= 0f)
                 {
-                    currentGameState = GameState.GameOver;
-                    OnStateChanged?.Invoke(currentGameState);
+                    currentGameState.Value = GameState.GameOver;
 
                 }
                 break;
             case GameState.GameOver:
-                OnStateChanged?.Invoke(currentGameState);
                 break;
         }
     }
 
     internal bool IsGamePlaing()
     {
-        return currentGameState == GameState.Playing;
+        return currentGameState.Value == GameState.Playing;
     }
 
     internal bool IsGameOver()
     {
-        return currentGameState == GameState.GameOver;
+        return currentGameState.Value == GameState.GameOver;
     }
 
     internal float GetCountdownToStartTimer()
     {
-        return countdownToStartTimer;
+        return countdownToStartTimer.Value;
     }
     internal float GetGameplayTimerNormalized()
     {
-        return 1 - gameplayTimer / gameplayTimerMax;
+        return 1 - gameplayTimer.Value / gameplayTimerMax;
     }
 }

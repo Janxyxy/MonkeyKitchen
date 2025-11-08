@@ -22,9 +22,15 @@ public class TutorialUI : MonoBehaviour
     {
         GameInput.Instance.OnBindingRebind += UpdateVisual;
         GameManager.Instance.OnStateChanged += GameManager_OnStateChanged;
+        GameManager.Instance.OnLocalPlayerReadyChanged += GameManager_OnLocalPlayerReadyChanged;
 
         UpdateVisual();
         Show(true);
+    }
+
+    private void GameManager_OnLocalPlayerReadyChanged(bool ready)
+    {
+        Show(!ready);
     }
 
     private void GameManager_OnStateChanged(GameManager.GameState state)

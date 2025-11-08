@@ -8,7 +8,6 @@ public class Player : NetworkBehaviour, IKitchenObjectParent
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float playerRadus = 1f;
-    [SerializeField] private float playerHeight = 2f;
 
     [Header("Interaction Settings")]
     [SerializeField] private float interactDistance = 2;
