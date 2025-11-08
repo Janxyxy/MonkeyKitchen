@@ -1,9 +1,11 @@
 using UnityEngine;
 using Unity.Netcode;
 using System;
+using UnityEngine.SceneManagement;
 
 public class KitchenGameMultiplayer : NetworkBehaviour
 {
+    private const int MAX_PLAYER_AMOUNT = 4;
 
     [SerializeField] private KitchenObjectsListSO kitchenObjectsListSO;
     public static KitchenGameMultiplayer Instance { get; private set; }
@@ -11,6 +13,8 @@ public class KitchenGameMultiplayer : NetworkBehaviour
     private void Awake()
     {
         Instance = this;
+
+        DontDestroyOnLoad(gameObject);
     }
 
     public void StartHost()
@@ -21,16 +25,31 @@ public class KitchenGameMultiplayer : NetworkBehaviour
 
     private void NetworkManager_ConnectionApprovalCallback(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
     {
-        if(GameManager.Instance.isWaitingToStart())
-        {
-            response.Approved = true;
-            response.CreatePlayerObject = true;
-        }
-        else
+        if (SceneManager.GetActiveScene().name != Loader.Scene.Game.ToString())
         {
             response.Approved = false;
-            response.Reason = "Game has already started!";
+            response.Reason = "Game has not started yet!";
+            return;
         }
+
+        if(NetworkManager.Singleton.ConnectedClients.Count >= MAX_PLAYER_AMOUNT)
+        {
+            response.Approved = false;
+            response.Reason = "Server is full!";
+            return;
+        }
+        response.Approved = true;
+
+        //if(GameManager.Instance.isWaitingToStart())
+        //{
+        //    response.Approved = true;
+        //    response.CreatePlayerObject = true;
+        //}
+        //else
+        //{
+        //    response.Approved = false;
+        //    response.Reason = "Game has already started!";
+        //}
     }
 
     public void StartClient()
