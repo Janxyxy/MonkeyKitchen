@@ -8,9 +8,15 @@ public class HostDisconnectUI : MonoBehaviour
 {
     [SerializeField] private Button playAgainButton;
 
-    private void Start()
+   
+private void Start()
     {
         NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_OnClientDisconnectCallback;
+
+        playAgainButton.onClick.AddListener(() => {
+            NetworkManager.Singleton.Shutdown();
+            Loader.Load(Loader.Scene.MainMenu);
+        });
 
         Show(false);
     }
@@ -19,6 +25,7 @@ public class HostDisconnectUI : MonoBehaviour
     {
         if (clientId == NetworkManager.ServerClientId)
         {
+            Debug.Log("Host disconnected!");
             // Server is shutting down
             Show(true);
         }
@@ -26,7 +33,7 @@ public class HostDisconnectUI : MonoBehaviour
 
     private void Show(bool show)
     {
-        gameObject.SetActive(true);
+        gameObject.SetActive(show);
     }
 
 }
