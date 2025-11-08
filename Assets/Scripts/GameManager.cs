@@ -242,6 +242,11 @@ public class GameManager : NetworkBehaviour
         return currentGameState.Value == GameState.GameOver;
     }
 
+    internal bool isWaitingToStart()
+    {
+        return currentGameState.Value == GameState.WaitingToStart;
+    }
+
     internal float GetCountdownToStartTimer()
     {
         return countdownToStartTimer.Value;

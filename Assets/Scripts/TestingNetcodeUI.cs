@@ -20,7 +20,9 @@ public class TestingNetcodeUI : MonoBehaviour
             Debug.LogWarning("Already hosting!");
             return;
         }
-        NetworkManager.Singleton.StartHost();
+
+        KitchenGameMultiplayer.Instance.StartHost();
+
         Show(false);
         Debug.Log("Started hosting");
     }
@@ -31,7 +33,9 @@ public class TestingNetcodeUI : MonoBehaviour
             Debug.LogWarning("Already hosting!");
             return;
         }
-        NetworkManager.Singleton.StartClient();
+
+        KitchenGameMultiplayer.Instance.StartClient();
+
         Show(false);
         Debug.Log("Started client");
     }
