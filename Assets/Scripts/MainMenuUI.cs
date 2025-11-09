@@ -27,7 +27,7 @@ public class MainMenuUI : MonoBehaviour
 
     private void OnPlayButtonClicked()
     {
-       Loader.Load(Loader.Scene.Game);
+       Loader.Load(Loader.Scene.Lobby);
     }
     private void OnQuitButtonClicked()
     {

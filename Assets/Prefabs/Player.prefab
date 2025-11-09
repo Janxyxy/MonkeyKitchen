@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 412757888886085087}
   - component: {fileID: 4562640605663222033}
   - component: {fileID: 3019405201088370344}
+  - component: {fileID: 6705575623585340150}
   - component: {fileID: 4586466778791828156}
   m_Layer: 7
   m_Name: Player
@@ -51,7 +52,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 792262359
+  GlobalObjectIdHash: 2895638919
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -79,7 +80,6 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   moveSpeed: 7
   playerRadus: 1
-  playerHeight: 2
   interactDistance: 2
   interactLayerMask:
     serializedVersion: 2
@@ -154,6 +154,19 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   TransitionStateInfoList: []
   m_Animator: {fileID: 5997047073883679398}
+--- !u!114 &6705575623585340150
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5681230043272548749}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35c0eff4372438143a7017fed8058167, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimator
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!65 &4586466778791828156
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -257,6 +270,10 @@ PrefabInstance:
     - target: {fileID: 3294758251327466535, guid: 1c5dda3c7cd3cf742afcade5419faeab, type: 3}
       propertyPath: m_Name
       value: PlayerVisual
+      objectReference: {fileID: 0}
+    - target: {fileID: 6561988023691852665, guid: 1c5dda3c7cd3cf742afcade5419faeab, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 317490813
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

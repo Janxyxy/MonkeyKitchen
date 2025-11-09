@@ -59,6 +59,8 @@ public class GameManager : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        base.OnNetworkSpawn();
+
         currentGameState.OnValueChanged += CurrentGameState_OnValueChanged;
         isGamePaused.OnValueChanged += IsLocalGamePaused_OnValueChanged;
 

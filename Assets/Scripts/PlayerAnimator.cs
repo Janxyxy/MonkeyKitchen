@@ -11,7 +11,7 @@ public class PlayerAnimator : NetworkBehaviour
     private void Awake()
     {
         player = GetComponentInParent<Player>();
-        animator = GetComponent<Animator>();
+        animator = GetComponentInChildren<Animator>();
     }
 
     private void Update()
