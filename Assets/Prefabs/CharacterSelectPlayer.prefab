@@ -152,6 +152,7 @@ MonoBehaviour:
   playerIndex: 0
   readyGameObject: {fileID: 5921156003275232819}
   playerVisual: {fileID: 2526454026678841928}
+  kickPlayer: {fileID: 8543722508361410890}
 --- !u!1 &2102053886517231513
 GameObject:
   m_ObjectHideFlags: 0
