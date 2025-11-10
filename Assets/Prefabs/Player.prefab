@@ -52,7 +52,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2895638919
+  GlobalObjectIdHash: 792262359
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -92,6 +92,7 @@ MonoBehaviour:
   - {x: 2, y: 0, z: 2}
   - {x: -2, y: 0, z: -2}
   - {x: 2, y: 0, z: -2}
+  playerVisual: {fileID: 4187005702315017188}
   kitchenObjectHoldPoint: {fileID: 5605137210026361022}
 --- !u!114 &4562640605663222033
 MonoBehaviour:
@@ -285,6 +286,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3294758251327466532, guid: 1c5dda3c7cd3cf742afcade5419faeab, type: 3}
   m_PrefabInstance: {fileID: 2045717326760041939}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4187005702315017188 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2772214684309347895, guid: 1c5dda3c7cd3cf742afcade5419faeab, type: 3}
+  m_PrefabInstance: {fileID: 2045717326760041939}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e696c12de8ebf2a429cfbf55c1622acc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerVisual
 --- !u!95 &5997047073883679398 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 5717904236835321717, guid: 1c5dda3c7cd3cf742afcade5419faeab, type: 3}

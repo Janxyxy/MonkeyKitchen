@@ -2,13 +2,15 @@ using UnityEngine;
 using Unity.Netcode;
 using System;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 
 public class KitchenGameMultiplayer : NetworkBehaviour
 {
 
-    private const int MAX_PLAYER_AMOUNT = 4;
+    public const int MAX_PLAYER_AMOUNT = 4;
 
     [SerializeField] private KitchenObjectsListSO kitchenObjectsListSO;
+    [SerializeField] private List<Color> playerColorList;
     public static KitchenGameMultiplayer Instance { get; private set; }
 
     public event Action OnTryingToJoinGame;
@@ -35,45 +37,49 @@ public class KitchenGameMultiplayer : NetworkBehaviour
     public void StartHost()
     {
         NetworkManager.Singleton.ConnectionApprovalCallback += NetworkManager_ConnectionApprovalCallback;
-        NetworkManager.Singleton.OnClientConnectedCallback += NetworkManager_OnClientConnectedCallback;
+        NetworkManager.Singleton.OnClientConnectedCallback += NetworkManager_OnClient_OnClientDisconnectCallback;
+        NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_Server_OnClientDisconnectCallback;
         NetworkManager.Singleton.StartHost();
     }
 
-    private void NetworkManager_OnClientConnectedCallback(ulong clientId)
+    private void NetworkManager_Server_OnClientDisconnectCallback(ulong clientId)
+    {
+        for (int i = 0; i < playerDataNetworkList.Count; i++)
+        {
+            PlayerData playerData = playerDataNetworkList[i];
+            if (playerData.clientId == clientId)
+            {
+                playerDataNetworkList.RemoveAt(i);
+            }
+        }
+    }
+
+    private void NetworkManager_OnClient_OnClientDisconnectCallback(ulong clientId)
     {
         playerDataNetworkList.Add(new PlayerData
         {
-            ClientId = clientId
+            clientId = clientId,
+            colorId = GetFirstUnusedColorId()
         });
     }
 
-    private void NetworkManager_ConnectionApprovalCallback(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
+    private void NetworkManager_ConnectionApprovalCallback(NetworkManager.ConnectionApprovalRequest connectionApprovalRequest, NetworkManager.ConnectionApprovalResponse connectionApprovalResponse)
     {
-        if (SceneManager.GetActiveScene().name != Loader.Scene.Game.ToString())
+        if (SceneManager.GetActiveScene().name != Loader.Scene.CharacterSelect.ToString())
         {
-            response.Approved = false;
-            response.Reason = "Game has not started yet!";
+            connectionApprovalResponse.Approved = false;
+            connectionApprovalResponse.Reason = "Game has already started";
             return;
         }
 
-        if (NetworkManager.Singleton.ConnectedClients.Count >= MAX_PLAYER_AMOUNT)
+        if (NetworkManager.Singleton.ConnectedClientsIds.Count >= MAX_PLAYER_AMOUNT)
         {
-            response.Approved = false;
-            response.Reason = "Server is full!";
+            connectionApprovalResponse.Approved = false;
+            connectionApprovalResponse.Reason = "Game is full";
             return;
         }
-        response.Approved = true;
 
-        //if(GameManager.Instance.isWaitingToStart())
-        //{
-        //    response.Approved = true;
-        //    response.CreatePlayerObject = true;
-        //}
-        //else
-        //{
-        //    response.Approved = false;
-        //    response.Reason = "Game has already started!";
-        //}
+        connectionApprovalResponse.Approved = true;
     }
 
     public void StartClient()
@@ -153,8 +159,92 @@ public class KitchenGameMultiplayer : NetworkBehaviour
         return playerIndex < playerDataNetworkList.Count;
     }
 
+    public PlayerData GetPlayerDataFromClientId(ulong clientId)
+    {
+        foreach (PlayerData playerData in playerDataNetworkList)
+        {
+            if (playerData.clientId == clientId)
+            {
+                return playerData;
+            }
+        }
+        return default;
+    }
+    public int GetPlayerDataIndexFromClientId(ulong clientId)
+    {
+        for (int i = 0; i < playerDataNetworkList.Count; i++)
+        {
+            if (playerDataNetworkList[i].clientId == clientId)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public PlayerData GetPlayerData()
+    {
+        ulong clientId = NetworkManager.Singleton.LocalClientId;
+        return GetPlayerDataFromClientId(clientId);
+    }
+
     public PlayerData GetPlayerDataFromPlayerIndex(int playerIndex)
     {
         return playerDataNetworkList[playerIndex];
+    }
+
+    public Color GetPlayerColor(int colorId)
+    {
+        return playerColorList[colorId];
+    }
+
+    public void ChangePlayerColor(int colorId)
+    {
+        ChangePlayerColorServerRpc(colorId);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void ChangePlayerColorServerRpc(int colorId, ServerRpcParams serverRpcParams = default)
+    {
+        if (!IsColorAvalible(colorId))
+        {
+            // Color is not available
+            return;
+        }
+
+        int playerDataIndex = GetPlayerDataIndexFromClientId(serverRpcParams.Receive.SenderClientId);
+        PlayerData playerData = playerDataNetworkList[playerDataIndex];
+        playerData.colorId = colorId;
+        playerDataNetworkList[playerDataIndex] = playerData;
+    }
+
+    private bool IsColorAvalible(int colorId)
+    {
+        foreach (PlayerData playerData in playerDataNetworkList)
+        {
+            if (playerData.colorId == colorId)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private int GetFirstUnusedColorId()
+    {
+        for (int i = 0; i < playerColorList.Count; i++)
+        {
+            if (IsColorAvalible(i))
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public void KickPlayer(ulong clientId)
+    {
+        NetworkManager.Singleton.DisconnectClient(clientId);
+        NetworkManager_Server_OnClientDisconnectCallback(clientId);
     }
 }

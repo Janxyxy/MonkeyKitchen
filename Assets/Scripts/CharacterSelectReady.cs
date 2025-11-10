@@ -60,6 +60,6 @@ public class CharacterSelectReady : NetworkBehaviour
 
     public bool IsPlayerReady(ulong clientId)
     {
-        return playerReadyDictionary.ContainsKey(clientId);
+        return playerReadyDictionary.ContainsKey(clientId) && playerReadyDictionary[clientId];
     }
 }

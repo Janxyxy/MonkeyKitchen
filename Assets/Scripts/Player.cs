@@ -17,6 +17,9 @@ public class Player : NetworkBehaviour, IKitchenObjectParent
     [Header("Spawn")]
     [SerializeField] private List<Vector3> spawnPosotions;
 
+    [Header("Visual")]
+    [SerializeField] private PlayerVisual playerVisual;
+
 
     private bool isMoving;
     private Vector3 lastIteractDir;
@@ -47,7 +50,7 @@ public class Player : NetworkBehaviour, IKitchenObjectParent
         }
 
 
-        transform.position = spawnPosotions[(int)OwnerClientId];
+        transform.position = spawnPosotions[KitchenGameMultiplayer.Instance.GetPlayerDataIndexFromClientId(OwnerClientId)];
         OnAnyPlayerSpawned?.Invoke();
 
         if (IsServer)
@@ -75,6 +78,10 @@ public class Player : NetworkBehaviour, IKitchenObjectParent
     {
         GameInput.Instance.OnInteractAction += GameInput_OnInteractAction;
         GameInput.Instance.OnInteractAlternativeAction += GameInput_OnInteractAlternativeAction;
+
+        PlayerData playerData = KitchenGameMultiplayer.Instance.GetPlayerDataFromClientId(OwnerClientId);
+        Color playerColor = KitchenGameMultiplayer.Instance.GetPlayerColor(playerData.colorId);
+        playerVisual.SetColor(playerColor);
     }
 
 

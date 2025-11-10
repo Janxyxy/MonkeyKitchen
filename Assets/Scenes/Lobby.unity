@@ -235,7 +235,7 @@ MonoBehaviour:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_SelectedColor: {r: 0.12827808, g: 0.8679245, b: 0.14484185, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
@@ -1253,7 +1253,7 @@ MonoBehaviour:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_SelectedColor: {r: 0.12827808, g: 0.8679245, b: 0.14484185, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
@@ -1654,6 +1654,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::KitchenGameMultiplayer
   ShowTopMostFoldoutHeaderGroup: 1
   kitchenObjectsListSO: {fileID: 11400000, guid: ecee2ed581c957a47b29ef51248c8bc4, type: 2}
+  playerColorList:
+  - {r: 1, g: 0.85978806, b: 0, a: 1}
+  - {r: 1, g: 0.63945806, b: 0, a: 1}
+  - {r: 1, g: 0.2686206, b: 0, a: 1}
+  - {r: 1, g: 0, b: 0.90931463, a: 1}
+  - {r: 0, g: 0.070367336, b: 1, a: 1}
+  - {r: 0, g: 0.60769606, b: 1, a: 1}
+  - {r: 0, g: 1, b: 0.62647223, a: 1}
+  - {r: 0, g: 1, b: 0.15170741, a: 1}
+  - {r: 0.45619798, g: 1, b: 0, a: 1}
+  - {r: 0.34591186, g: 0.34591186, b: 0.34591186, a: 1}
+  - {r: 1, g: 1, b: 1, a: 1}
 --- !u!114 &1789087660
 MonoBehaviour:
   m_ObjectHideFlags: 0
