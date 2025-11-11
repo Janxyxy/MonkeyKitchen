@@ -6,6 +6,7 @@ using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 
 public class GameLobby : MonoBehaviour
@@ -46,7 +47,7 @@ public class GameLobby : MonoBehaviour
 
     private void HandlePeriodic()
     {
-        if (joinedLobby == null && AuthenticationService.Instance.IsSignedIn)
+        if (joinedLobby == null && AuthenticationService.Instance.IsSignedIn && SceneManager.GetActiveScene().name == Loader.Scene.Lobby.ToString())
         {
             listLobbiesTimer -= Time.deltaTime;
             if (listLobbiesTimer <= 0f)
