@@ -25,6 +25,13 @@ public class LobbyCreateUI : MonoBehaviour
         {
             Hide();
         });
+
+
+    }
+
+    private void Start()
+    {
+        Hide();
     }
 
     public void Show()
