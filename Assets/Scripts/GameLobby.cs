@@ -1,106 +1,51 @@
+using JetBrains.Annotations;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Unity.Multiplayer.Widgets;
+using Unity.Netcode;
+using Unity.Netcode.Transports.UTP;
+using Unity.Networking.Transport.Relay;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
+using Unity.Services.Relay;
+using Unity.Services.Relay.Models;
 using UnityEngine;
-using System.Collections.Generic;
 using UnityEngine.SceneManagement;
-
 
 public class GameLobby : MonoBehaviour
 {
-    private Lobby joinedLobby;
 
-    private float heartbeatTimer;
-    private float listLobbiesTimer;
 
-    public event Action OnCreteLobbyStarted;
-    public event Action OnCreteLobbyFaild;
-    public event Action OnJoinStarted;
-    public event Action OnQuickJoinFailed;
-    public event Action OnJoinFailed;
-
-    public event Action<List<Lobby>> OnLobbyListChanged;
+    private const string KEY_RELAY_JOIN_CODE = "RelayJoinCode";
 
 
     public static GameLobby Instance { get; private set; }
+
+
+    public event Action OnCreateLobbyStarted;
+    public event Action OnCreateLobbyFailed;
+    public event Action OnJoinStarted;
+    public event Action OnQuickJoinFailed;
+    public event Action OnJoinFailed;
+    public event Action<List<Lobby>> OnLobbyListChanged;
+
+
+    private Lobby joinedLobby;
+    private float heartbeatTimer;
+    private float listLobbiesTimer;
+
+
     private void Awake()
     {
-        DontDestroyOnLoad(this.gameObject);
-
-        if (Instance != null)
-        {
-            Destroy(gameObject);
-            return;
-        }
         Instance = this;
 
+        DontDestroyOnLoad(gameObject);
+
         InitializeUnityAuthentication();
-    }
-    private void Update()
-    {
-        HandleHeartBeat();
-        HandlePeriodic();
-    }
-
-    private void HandlePeriodic()
-    {
-        if (joinedLobby == null && AuthenticationService.Instance.IsSignedIn && SceneManager.GetActiveScene().name == Loader.Scene.Lobby.ToString())
-        {
-            listLobbiesTimer -= Time.deltaTime;
-            if (listLobbiesTimer <= 0f)
-            {
-                float listLobbiesTimerMax = 5f;
-                listLobbiesTimer = listLobbiesTimerMax;
-                ListLobby();
-            }
-        }
-    }
-
-    private void HandleHeartBeat()
-    {
-        if (IsLobbyHost())
-        {
-            heartbeatTimer -= Time.deltaTime;
-            float heartbeatTimerMax = 15f;
-            if (heartbeatTimer <= 0f)
-            {
-                heartbeatTimer = heartbeatTimerMax;
-                LobbyService.Instance.SendHeartbeatPingAsync(joinedLobby.Id);
-            }
-
-        }
-    }
-
-    private bool IsLobbyHost()
-    {
-        return joinedLobby != null && AuthenticationService.Instance.PlayerId == joinedLobby.HostId;
-    }
-
-    private async void ListLobby()
-    {
-        try
-        {
-            QueryLobbiesOptions queryLobbiesOptions = new QueryLobbiesOptions
-            {
-                Filters = new List<QueryFilter>
-            {
-                // Only lobbies with available slots
-                new QueryFilter(QueryFilter.FieldOptions.AvailableSlots, "0", QueryFilter.OpOptions.GT),
-            }
-            };
-
-            QueryResponse queryResponse = await LobbyService.Instance.QueryLobbiesAsync(queryLobbiesOptions);
-            OnLobbyListChanged?.Invoke(queryResponse.Results);
-
-            Debug.Log($"List Lobby Success: {queryResponse.Results.Count} lobbies found");
-        }
-        catch (LobbyServiceException e)
-        {
-            Debug.LogError($"List Lobby Failed: {e}");
-        }
     }
 
     private async void InitializeUnityAuthentication()
@@ -108,7 +53,7 @@ public class GameLobby : MonoBehaviour
         if (UnityServices.State != ServicesInitializationState.Initialized)
         {
             InitializationOptions initializationOptions = new InitializationOptions();
-            initializationOptions.SetProfile(UnityEngine.Random.Range(0, 999999).ToString());
+            initializationOptions.SetProfile(UnityEngine.Random.Range(0, 10000).ToString());
 
             await UnityServices.InitializeAsync(initializationOptions);
 
@@ -116,77 +61,231 @@ public class GameLobby : MonoBehaviour
         }
     }
 
-    public async Task CreateLobby(string lobbyName, bool isPrivate)
+    private void Update()
     {
-        OnCreteLobbyStarted?.Invoke();
+        HandleHeartbeat();
+        HandlePeriodicListLobbies();
+    }
+
+    private void HandlePeriodicListLobbies()
+    {
+        if (joinedLobby == null &&
+            UnityServices.State == ServicesInitializationState.Initialized &&
+            AuthenticationService.Instance.IsSignedIn &&
+            SceneManager.GetActiveScene().name == Loader.Scene.Lobby.ToString())
+        {
+
+            listLobbiesTimer -= Time.deltaTime;
+            if (listLobbiesTimer <= 0f)
+            {
+                float listLobbiesTimerMax = 3f;
+                listLobbiesTimer = listLobbiesTimerMax;
+                ListLobbies();
+            }
+        }
+    }
+
+
+    private void HandleHeartbeat()
+    {
+        if (IsLobbyHost())
+        {
+            heartbeatTimer -= Time.deltaTime;
+            if (heartbeatTimer <= 0f)
+            {
+                float heartbeatTimerMax = 15f;
+                heartbeatTimer = heartbeatTimerMax;
+
+                LobbyService.Instance.SendHeartbeatPingAsync(joinedLobby.Id);
+            }
+        }
+    }
+
+    private bool IsLobbyHost()
+    {
+        return joinedLobby != null && joinedLobby.HostId == AuthenticationService.Instance.PlayerId;
+    }
+
+    private async void ListLobbies()
+    {
+        try
+        {
+            QueryLobbiesOptions queryLobbiesOptions = new QueryLobbiesOptions
+            {
+                Filters = new List<QueryFilter> {
+                  new QueryFilter(QueryFilter.FieldOptions.AvailableSlots, "0", QueryFilter.OpOptions.GT)
+             }
+            };
+            QueryResponse queryResponse = await LobbyService.Instance.QueryLobbiesAsync(queryLobbiesOptions);
+
+            OnLobbyListChanged?.Invoke(queryResponse.Results);
+        }
+        catch (LobbyServiceException e)
+        {
+            Debug.Log(e);
+        }
+    }
+
+
+    private async Task<Allocation> AllocateRelay()
+    {
+        try
+        {
+            Allocation allocation = await RelayService.Instance.CreateAllocationAsync(KitchenGameMultiplayer.MAX_PLAYER_AMOUNT - 1);
+
+            return allocation;
+        }
+        catch (RelayServiceException e)
+        {
+            Debug.Log(e);
+
+            return default;
+        }
+    }
+
+    private async Task<string> GetRelayJoinCode(Allocation allocation)
+    {
+        try
+        {
+            string relayJoinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
+
+            return relayJoinCode;
+        }
+        catch (RelayServiceException e)
+        {
+            Debug.Log(e);
+            return default;
+        }
+    }
+
+    private async Task<JoinAllocation> JoinRelay(string joinCode)
+    {
+        try
+        {
+            JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
+            return joinAllocation;
+        }
+        catch (RelayServiceException e)
+        {
+            Debug.Log(e);
+            return default;
+        }
+    }
+
+
+    public async void CreateLobby(string lobbyName, bool isPrivate)
+    {
+        OnCreateLobbyStarted?.Invoke();
         try
         {
             joinedLobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, KitchenGameMultiplayer.MAX_PLAYER_AMOUNT, new CreateLobbyOptions
             {
-                IsPrivate = isPrivate
+                IsPrivate = isPrivate,
             });
+
+            Allocation allocation = await AllocateRelay();
+
+            string relayJoinCode = await GetRelayJoinCode(allocation);
+
+            await LobbyService.Instance.UpdateLobbyAsync(joinedLobby.Id, new UpdateLobbyOptions
+            {
+                Data = new Dictionary<string, DataObject> {
+                     { KEY_RELAY_JOIN_CODE , new DataObject(DataObject.VisibilityOptions.Member, relayJoinCode) }
+                 }
+            });
+
+            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(AllocationUtils.ToRelayServerData(allocation, "dtls"));
 
             KitchenGameMultiplayer.Instance.StartHost();
             Loader.LoadNetwork(Loader.Scene.CharacterSelect);
-
         }
         catch (LobbyServiceException e)
         {
-            OnCreteLobbyFaild?.Invoke();
-            Debug.LogError($"Create Lobby Failed: {e}");
+            Debug.Log(e);
+            OnCreateLobbyFailed?.Invoke();
         }
     }
-    public async void QuickJoinLobby()
+
+    public async void QuickJoin()
     {
         OnJoinStarted?.Invoke();
         try
         {
             joinedLobby = await LobbyService.Instance.QuickJoinLobbyAsync();
 
+            string relayJoinCode = joinedLobby.Data[KEY_RELAY_JOIN_CODE].Value;
+
+            JoinAllocation joinAllocation = await JoinRelay(relayJoinCode);
+
+            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(AllocationUtils.ToRelayServerData(joinAllocation, "dtls"));
+
             KitchenGameMultiplayer.Instance.StartClient();
         }
         catch (LobbyServiceException e)
         {
-            Debug.LogError($"Quick Join Lobby Failed: {e}");
+            Debug.Log(e);
             OnQuickJoinFailed?.Invoke();
         }
     }
-    public Lobby GetLobby()
-    {
-        return joinedLobby;
-    }
 
-    internal async Task JoinLobbyByCode(string lobbyCode)
-    {
-        OnJoinStarted?.Invoke();
-        try
-        {
-            joinedLobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode);
-
-            KitchenGameMultiplayer.Instance.StartClient();
-        }
-        catch (LobbyServiceException e)
-        {
-            Debug.LogError($"Join Lobby By Code Failed: {e}");
-            OnJoinFailed?.Invoke();
-            return;
-        }
-    }
-
-    internal async Task JoinLobbyById(string lobbyId)
+    public async void JoinWithId(string lobbyId)
     {
         OnJoinStarted?.Invoke();
         try
         {
             joinedLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobbyId);
 
+            string relayJoinCode = joinedLobby.Data[KEY_RELAY_JOIN_CODE].Value;
+
+            JoinAllocation joinAllocation = await JoinRelay(relayJoinCode);
+
+            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(AllocationUtils.ToRelayServerData(joinAllocation, "dtls"));
+
             KitchenGameMultiplayer.Instance.StartClient();
         }
         catch (LobbyServiceException e)
         {
-            Debug.LogError($"Join Lobby By Id Failed: {e}");
+            Debug.Log(e);
             OnJoinFailed?.Invoke();
-            return;
+        }
+    }
+
+    public async void JoinWithCode(string lobbyCode)
+    {
+        OnJoinStarted?.Invoke();
+        try
+        {
+            joinedLobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode);
+
+            string relayJoinCode = joinedLobby.Data[KEY_RELAY_JOIN_CODE].Value;
+
+            JoinAllocation joinAllocation = await JoinRelay(relayJoinCode);
+
+            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(AllocationUtils.ToRelayServerData(joinAllocation, "dtls"));
+
+            KitchenGameMultiplayer.Instance.StartClient();
+        }
+        catch (LobbyServiceException e)
+        {
+            Debug.Log(e);
+            OnJoinFailed?.Invoke();
+        }
+    }
+
+    public async void DeleteLobby()
+    {
+        if (joinedLobby != null)
+        {
+            try
+            {
+                await LobbyService.Instance.DeleteLobbyAsync(joinedLobby.Id);
+
+                joinedLobby = null;
+            }
+            catch (LobbyServiceException e)
+            {
+                Debug.Log(e);
+            }
         }
     }
 
@@ -202,7 +301,7 @@ public class GameLobby : MonoBehaviour
             }
             catch (LobbyServiceException e)
             {
-                Debug.LogError($"Leave Lobby Failed: {e}");
+                Debug.Log(e);
             }
         }
     }
@@ -217,25 +316,37 @@ public class GameLobby : MonoBehaviour
             }
             catch (LobbyServiceException e)
             {
-                Debug.LogError($"Leave Lobby Failed: {e}");
+                Debug.Log(e);
             }
         }
-
     }
 
-    public async void DeleteLobby()
+    //private void SetUpRelayTranport(JoinAllocation allocation)
+    //{
+    //    NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(
+    //          allocation.RelayServer.IpV4, // IP adresa Relay serveru
+    //          (ushort)allocation.RelayServer.Port,   // Port
+    //          allocation.AllocationIdBytes,    // Allocation ID
+    //          allocation.Key,                  // Klíè
+    //          allocation.ConnectionData,       // Host Connection Data
+    //          allocation.HostConnectionData    // Host/Self Connection Data
+    //      );
+    //}
+
+    //private void SetUpRelayTranport(Allocation allocation)
+    //{
+    //    NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(
+    //          allocation.RelayServer.IpV4, // IP adresa Relay serveru
+    //          (ushort)allocation.RelayServer.Port,   // Port
+    //          allocation.AllocationIdBytes,    // Allocation ID
+    //          allocation.Key,                  // Klíè
+    //          allocation.ConnectionData        // Host Connection Data
+    //      );
+    //}
+
+    public Lobby GetLobby()
     {
-        if (joinedLobby != null)
-        {
-            try
-            {
-                await LobbyService.Instance.DeleteLobbyAsync(joinedLobby.Id);
-                joinedLobby = null;
-            }
-            catch (LobbyServiceException e)
-            {
-                Debug.LogError($"Delete Lobby Failed: {e}");
-            }
-        }
+        return joinedLobby;
     }
+
 }

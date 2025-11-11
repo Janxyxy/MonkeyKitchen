@@ -32,13 +32,13 @@ public class LobbyUI : MonoBehaviour
         });
         quickJoinButton.onClick.AddListener(() =>
         {
-            GameLobby.Instance.QuickJoinLobby();
+            GameLobby.Instance.QuickJoin();
         });
 
-        joinCodeButton.onClick.AddListener(async () =>
+        joinCodeButton.onClick.AddListener(() =>
         {
             string lobbyCode = codeInputField.text;
-            await GameLobby.Instance.JoinLobbyByCode(lobbyCode);
+            GameLobby.Instance.JoinWithCode(lobbyCode);
         });
 
         lobbyTemplate.gameObject.SetActive(false);
@@ -66,7 +66,8 @@ public class LobbyUI : MonoBehaviour
     {
         foreach (Transform child in lobbyContainer)
         {
-            if (child == lobbyTemplate) continue;
+            if (child == lobbyTemplate)
+                continue;
             Destroy(child.gameObject);
         }
 

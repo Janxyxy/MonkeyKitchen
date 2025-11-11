@@ -12,9 +12,9 @@ public class LobbyListSingleUI : MonoBehaviour
 
     private void Awake()
     {
-        GetComponent<Button>().onClick.AddListener(async() =>
+        GetComponent<Button>().onClick.AddListener(() =>
         {
-             await GameLobby.Instance.JoinLobbyById(lobby.Id);
+            GameLobby.Instance.JoinWithCode(lobby.Id);
         });
     }
 

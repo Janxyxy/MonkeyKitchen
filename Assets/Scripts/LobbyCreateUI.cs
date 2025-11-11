@@ -11,14 +11,14 @@ public class LobbyCreateUI : MonoBehaviour
 
     private void Awake()
     {
-        createPrivateLobby.onClick.AddListener(async () =>
+        createPrivateLobby.onClick.AddListener( () =>
         {
-            await GameLobby.Instance.CreateLobby(lobbyNameInputField.text, true);
+            GameLobby.Instance.CreateLobby(lobbyNameInputField.text, true);
         });
 
-        createPublicLobby.onClick.AddListener(async () =>
+        createPublicLobby.onClick.AddListener( () =>
          {
-             await GameLobby.Instance.CreateLobby(lobbyNameInputField.text, false);
+             GameLobby.Instance.CreateLobby(lobbyNameInputField.text, false);
          });
 
         closeButton.onClick.AddListener(() =>

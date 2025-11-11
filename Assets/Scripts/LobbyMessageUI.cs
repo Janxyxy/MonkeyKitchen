@@ -17,8 +17,8 @@ public class LobbyMessageUI : MonoBehaviour
     {
         KitchenGameMultiplayer.Instance.OnFailedToJoinGame += KitchenGameMultiplayer_OnFailedToJoinGame;
 
-        GameLobby.Instance.OnCreteLobbyStarted += GameLobby_OnCreteLobbyStarted;
-        GameLobby.Instance.OnCreteLobbyFaild += GameLobby_OnCreteLobbyFaild;
+        GameLobby.Instance.OnCreateLobbyStarted += GameLobby_OnCreateLobbyStarted;
+        GameLobby.Instance.OnCreateLobbyFailed += GameLobby_OnCreateLobbyFailed;
         GameLobby.Instance.OnJoinStarted += GameLobby_OnJoinStarted;
         GameLobby.Instance.OnJoinFailed += GameLobby_OnJoinFailed;
         GameLobby.Instance.OnQuickJoinFailed += GameLobby_OnQuickJoinFailed;
@@ -41,12 +41,12 @@ public class LobbyMessageUI : MonoBehaviour
         ShowMessage("Joining lobby...");
     }
 
-    private void GameLobby_OnCreteLobbyFaild()
+    private void GameLobby_OnCreateLobbyFailed()
     {
         ShowMessage("Failed to create lobby");
     }
 
-    private void GameLobby_OnCreteLobbyStarted()
+    private void GameLobby_OnCreateLobbyStarted()
     {
         ShowMessage("Creating lobby...");
     }
@@ -84,8 +84,8 @@ public class LobbyMessageUI : MonoBehaviour
     private void OnDestroy()
     {
         KitchenGameMultiplayer.Instance.OnFailedToJoinGame -= KitchenGameMultiplayer_OnFailedToJoinGame;
-        GameLobby.Instance.OnCreteLobbyStarted -= GameLobby_OnCreteLobbyStarted;
-        GameLobby.Instance.OnCreteLobbyFaild -= GameLobby_OnCreteLobbyFaild;
+        GameLobby.Instance.OnCreateLobbyStarted -= GameLobby_OnCreateLobbyStarted;
+        GameLobby.Instance.OnCreateLobbyFailed -= GameLobby_OnCreateLobbyFailed;
         GameLobby.Instance.OnJoinStarted -= GameLobby_OnJoinStarted;
         GameLobby.Instance.OnJoinFailed -= GameLobby_OnJoinFailed;
         GameLobby.Instance.OnQuickJoinFailed -= GameLobby_OnQuickJoinFailed;
