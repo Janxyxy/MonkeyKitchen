@@ -42,7 +42,8 @@ public class SelectedCounterVisual : MonoBehaviour
     {
         foreach (GameObject go in visualGO)
         {
-            go.SetActive(v);
+            if (go != null)
+                go.SetActive(v);
         }
     }
 }

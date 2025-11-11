@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,6 +9,7 @@ public class CharacterSelectPlayer : MonoBehaviour
     [SerializeField] private GameObject readyGameObject;
     [SerializeField] private PlayerVisual playerVisual;
     [SerializeField] private Button kickPlayer;
+    [SerializeField] private TextMeshProUGUI playerNameText;
 
     private void Awake()
     {
@@ -44,6 +46,8 @@ public class CharacterSelectPlayer : MonoBehaviour
 
             PlayerData playerData = KitchenGameMultiplayer.Instance.GetPlayerDataFromPlayerIndex(playerIndex);
             readyGameObject.SetActive(CharacterSelectReady.Instance.IsPlayerReady(playerData.clientId));
+
+            playerNameText.text = playerData.GetPlayerName();
 
             Color playerColor = KitchenGameMultiplayer.Instance.GetPlayerColor(playerData.colorId);
             playerVisual.SetColor(playerColor);
