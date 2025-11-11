@@ -14,7 +14,7 @@ public class LobbyListSingleUI : MonoBehaviour
     {
         GetComponent<Button>().onClick.AddListener(() =>
         {
-            GameLobby.Instance.JoinWithCode(lobby.Id);
+            GameLobby.Instance.JoinWithId(lobby.Id);
         });
     }
 
