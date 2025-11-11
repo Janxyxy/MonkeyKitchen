@@ -175,6 +175,12 @@ public class GameLobby : MonoBehaviour
 
     public async void CreateLobby(string lobbyName, bool isPrivate)
     {
+        if (joinedLobby != null)
+        {
+            Debug.LogWarning("Attempted to create a new lobby while already in one. Aborting.");
+            return;
+        }
+
         OnCreateLobbyStarted?.Invoke();
         try
         {
