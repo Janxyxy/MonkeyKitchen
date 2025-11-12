@@ -10,7 +10,7 @@ MonkeyKitchen is a Unity project built step-by-step while following the Kitchen 
 
 #### Tasks
 + [x] Finish Course 
-+ [ ] Add Multiplayer  
++ [x] Add Multiplayer  
 
 ### Preview
 ![MonkeyKitchenPreview](MonkeyKitchenPreview.png)
